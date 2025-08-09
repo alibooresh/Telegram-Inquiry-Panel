@@ -4,6 +4,8 @@ import {Form, Formik} from "formik";
 import * as Yup from "yup";
 import TextField from "../../../base/fields/textfield/TextField";
 import ExampleService from "../service/ExampleService";
+import {useTranslation} from "react-i18next";
+import LanguageSwitcher from "../../../base/languageswitcher/LanguageSwitcher";
 
 const initialValues = {
     username: "",
@@ -17,13 +19,11 @@ const validationSchema = Yup.object({
 
 
 const Example: React.FC = () => {
+    const { t } = useTranslation();
     const service = new ExampleService();
-    const [response, setResponse] = useState<any>({});
     const handleSubmit = async (values: typeof initialValues) => {
         try {
-            let response;
             service.example({}).then(response => {
-                setResponse(response);
                 localStorage.setItem("token", response.data.token);
                 window.location.href = "/requests";
             }).catch(reason => {
@@ -38,7 +38,7 @@ const Example: React.FC = () => {
         <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh" bgcolor="#f4f6f8">
             <Paper elevation={3} sx={{padding: 4, width: "100%", maxWidth: 400}}>
                 <Typography variant="h5" textAlign="center" mb={3}>
-                    ورود به پنل
+                    {t('example.title')}
                 </Typography>
                 <Formik
                     initialValues={initialValues}
@@ -55,6 +55,7 @@ const Example: React.FC = () => {
                         <Button type="submit" variant="contained" color="primary" fullWidth>
                             ورود
                         </Button>
+                        <LanguageSwitcher/>
                     </Form>
                 </Formik>
             </Paper>

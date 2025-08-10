@@ -6,6 +6,9 @@ import reportWebVitals from './reportWebVitals';
 import "./i18n";
 import {createTheme, ThemeProvider} from "@mui/material";
 import {faIR} from "@mui/material/locale";
+import {BrowserRouter, Route, Routes} from "react-router-dom";
+import LoginForm from "./app/login/form/LoginForm";
+import InquiryForm from "./app/inquiry/form/InquiryForm";
 
 
 
@@ -25,9 +28,11 @@ const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 root.render(
-    <ThemeProvider theme={theme}>
-    <App />
-    </ThemeProvider>
+    <BrowserRouter>
+        <ThemeProvider theme={theme}>
+            <App />
+        </ThemeProvider>
+    </BrowserRouter>
 );
 
 // If you want to start measuring performance in your app, pass a function

@@ -1,0 +1,3 @@
+export enum LoginState {
+    SEND_PHONE, CONFIRM_CODE, CONFIRM_PASSWORD
+}

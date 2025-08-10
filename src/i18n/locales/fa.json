@@ -1,5 +1,18 @@
 {
-  "example": {
-    "title": "ورود به پنل"
-  }
+  "title": "عنوان",
+  "id": "شناسه پیگیری",
+  "loginTitle": "ورود به پنل",
+  "phoneNumber": "شماره موبایل",
+  "confirmCode": "کد تایید",
+  "login": "ورود",
+  "password": "رمز ورود",
+  "inquiryList": "لیست استعلامات",
+  "status": "وضعیت",
+  "createdAt": "تاریخ شروع استعلام",
+  "recordCount": "تعداد رکورد",
+  "duration": "مدت زمان استعلام",
+  "name": "نام",
+  "userId": "شناسه کاربر",
+  "username": "یوزرنیم",
+  "inquiryDetailList": "لیست جزئیات استعلام"
 }

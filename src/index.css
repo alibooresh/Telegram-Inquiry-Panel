@@ -13,10 +13,19 @@ body {
 
 div, input, span, a, button, fieldset, label {
   font-family: Vazirmatn !important;
-  direction: rtl;
-  text-align: right;
+
 }
+/*.rtl{*/
+/*  direction: rtl;*/
+/*  text-align: right;*/
+/*}*/
 /*code {*/
 /*  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',*/
 /*    monospace;*/
 /*}*/
+.css-1gak8h1-MuiToolbar-root-MuiTablePagination-toolbar .MuiTablePagination-actions {
+  /*direction: rtl !important;*/
+}
+.css-y1ejz4-MuiTablePagination-root {
+  direction: rtl !important;
+}

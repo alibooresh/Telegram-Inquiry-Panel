@@ -1,8 +1,7 @@
 import React, {useState} from "react";
-import {Box, Button, Paper, Typography} from "@mui/material";
+import {Box, Button, Paper, TextField, Typography} from "@mui/material";
 import {Form, Formik} from "formik";
 import * as Yup from "yup";
-import TextField from "../../../base/fields/textfield/TextField";
 import ExampleService from "../service/ExampleService";
 import {useTranslation} from "react-i18next";
 import LanguageSwitcher from "../../../base/languageswitcher/LanguageSwitcher";

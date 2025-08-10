@@ -1,12 +1,22 @@
+@font-face {
+  font-family: Vazirmatn;
+  src: url("assest/fonts/ttf/Vazirmatn-Regular.ttf");
+}
+@font-face {
+  font-family: iransans;
+  src: url("assest/fonts/ttf/IRANSans.ttf");
+}
 body {
   margin: 0;
-  font-family: 'Vazirmatn';
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  font-family: Vazirmatn !important;
 }
 
-
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+div, input, span, a, button, fieldset, label {
+  font-family: Vazirmatn !important;
+  direction: rtl;
+  text-align: right;
 }
+/*code {*/
+/*  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',*/
+/*    monospace;*/
+/*}*/

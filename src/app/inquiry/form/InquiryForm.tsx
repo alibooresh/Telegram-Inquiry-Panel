@@ -14,6 +14,9 @@ import {
 import InquiryService from "../service/InquiryService";
 import InquiryModel from "../model/InquiryModel";
 import {useTranslation} from "react-i18next";
+import DataGrid from "../../../base/component/datagrid/CustomDataGrid";
+import {GridColDef} from "@mui/x-data-grid";
+import CustomDataGrid from "../../../base/component/datagrid/CustomDataGrid";
 
 const InquiryForm: React.FC = () => {
     const {t} = useTranslation();
@@ -54,6 +57,12 @@ const InquiryForm: React.FC = () => {
                 setLoading(false)
             });
     }, []);
+    const columns: GridColDef[] = [
+        { field: "id", headerName: "ID", width: 90 , headerAlign: "center"},
+        { field: "title", headerName: "عنوان", width: 200 , headerAlign: "center"},
+        { field: "status", headerName: "وضعیت", width: 120 , headerAlign: "center"},
+        { field: "createdAt", headerName: "تاریخ ایجاد", width: 180 , headerAlign: "center"},
+    ];
 
     return (
         <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh" bgcolor="#f4f6f8">
@@ -70,32 +79,14 @@ const InquiryForm: React.FC = () => {
                             </Typography>
                         </Toolbar>
                     </AppBar>
-
-
-                    <Box className={"rtl"} p={2}>
-                        {loading ? (
-                            <Box display="flex" justifyContent="center" mt={4}>
-                                <CircularProgress/>
-                            </Box>
-                        ) : (
-                            <Paper className={"rtl"}>
-                                <List>
-                                    {requests.map((req) => (
-                                        <React.Fragment key={req.id}>
-                                            <ListItem onClick={() => window.location.href = `/inquiry/${req.id}`}>
-                                                <ListItemText
-                                                    primary={`${t('id')}:${req.id}    ${t('status')}:${req.status}`}
-                                                    // secondary={`وضعیت: ${req.status} | تاریخ: ${req.createdAt}`}
-                                                    secondary={`${t('createdAt')}:${req.createdAt} - ${t('recordCount')}:${req.recordCount} - ${t('duration')}:${req.duration}`}
-                                                />
-                                            </ListItem>
-                                            <Divider/>
-                                        </React.Fragment>
-                                    ))}
-                                </List>
-                            </Paper>
-                        )}
-                    </Box>
+                    <CustomDataGrid
+                        columns={columns}
+                        rows={mockInquiries}
+                        // fetchUrl="/requests" // یا rows={[...]} اگر دیتا لوکال باشه
+                        pageSize={10}
+                        enableActions
+                        onActionClick={(row) => alert("جزئیات رکورد: " + row.id)}
+                    />
                 </Box>
             </Paper>
         </Box>
@@ -103,3 +94,27 @@ const InquiryForm: React.FC = () => {
 };
 
 export default InquiryForm;
+export interface Inquiry {
+    id: number;
+    title: string;
+    status: "جدید" | "در حال بررسی" | "تکمیل شده";
+    createdAt: string;
+}
+
+export const mockInquiries: Inquiry[] = [
+    { id: 1, title: "استعلام شماره ۱", status: "جدید", createdAt: "2025-08-01" },
+    { id: 2, title: "استعلام شماره ۲", status: "در حال بررسی", createdAt: "2025-08-02" },
+    { id: 3, title: "استعلام شماره ۳", status: "تکمیل شده", createdAt: "2025-08-03" },
+    { id: 4, title: "استعلام شماره ۴", status: "جدید", createdAt: "2025-08-04" },
+    { id: 5, title: "استعلام شماره ۵", status: "در حال بررسی", createdAt: "2025-08-05" },
+    { id: 6, title: "استعلام شماره ۶", status: "تکمیل شده", createdAt: "2025-08-06" },
+    { id: 7, title: "استعلام شماره ۷", status: "جدید", createdAt: "2025-08-07" },
+    { id: 8, title: "استعلام شماره ۸", status: "در حال بررسی", createdAt: "2025-08-08" },
+    { id: 9, title: "استعلام شماره ۹", status: "تکمیل شده", createdAt: "2025-08-09" },
+    { id: 10, title: "استعلام شماره ۱۰", status: "جدید", createdAt: "2025-08-10" },
+    { id: 11, title: "استعلام شماره ۱۱", status: "در حال بررسی", createdAt: "2025-08-11" },
+    { id: 12, title: "استعلام شماره ۱۲", status: "تکمیل شده", createdAt: "2025-08-12" },
+    { id: 13, title: "استعلام شماره ۱۳", status: "جدید", createdAt: "2025-08-13" },
+    { id: 14, title: "استعلام شماره ۱۴", status: "در حال بررسی", createdAt: "2025-08-14" },
+    { id: 15, title: "استعلام شماره ۱۵", status: "تکمیل شده", createdAt: "2025-08-15" },
+];

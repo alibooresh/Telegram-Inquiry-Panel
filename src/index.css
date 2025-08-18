@@ -9,12 +9,20 @@
 body {
   margin: 0;
   font-family: Vazirmatn !important;
+  background-image: linear-gradient(to top, #09203f 0%, #537895 100%) !important;
+}
+body .MuiBox-root{
+  background-image: linear-gradient(to top, #09203f 0%, #537895 100%) !important;
+}
+.MuiDataGrid-root .MuiDataGrid-root--densityStandard .MuiDataGrid-withBorderColor .MuiDataGridVariables-2354516109 .css-1i1v1sw-MuiDataGrid-root{
+  background-image: linear-gradient(to top, #5f72bd 0%, #9b23ea 100%) !important;
 }
 
 div, input, span, a, button, fieldset, label {
   font-family: Vazirmatn !important;
 
 }
+
 /*.rtl{*/
 /*  direction: rtl;*/
 /*  text-align: right;*/

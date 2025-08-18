@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { DataGrid, GridColDef, GridRowsProp } from "@mui/x-data-grid";
-import { CircularProgress, Box } from "@mui/material";
+import {CircularProgress, Box, IconButton} from "@mui/material";
 import api from "../../axios/axios.config";
+import DeleteIcon from '@mui/icons-material/Delete';
 
 interface CustomDataGridProps<T> {
     columns: GridColDef[];
-    rows?: T[]; // وقتی دیتا از بیرون پاس داده بشه
-    fetchUrl?: string; // وقتی دیتا از API گرفته بشه
-    pageSize?: number; // تعداد رکورد در هر صفحه
-    enableActions?: boolean; // ستون عملیات
-    onActionClick?: (row: T) => void; // هندلر برای اکشن
+    rows?: T[];
+    fetchUrl?: string;
+    pageSize?: number;
+    enableActions?: boolean;
+    onActionClick?: (row: T) => void;
 }
 
 function CustomDataGrid<T extends { id: string | number }>({
@@ -25,14 +26,14 @@ function CustomDataGrid<T extends { id: string | number }>({
     const [page, setPage] = useState(0);
     const [rowCount, setRowCount] = useState(0);
 
-    // گرفتن دیتا از API
+
     useEffect(() => {
         if (fetchUrl) {
             setLoading(true);
             api
-                .get(fetchUrl, { params: { page: page + 1, size: pageSize } }) // بک‌اند باید ساپورت کنه
+                .get(fetchUrl, { params: { page: page + 1, size: pageSize } })
                 .then((res) => {
-                    setData(res.data.items); // فرض: ریسپانس شامل { items, total }
+                    setData(res.data.items);
                     setRowCount(res.data.total);
                 })
                 .finally(() => setLoading(false));
@@ -42,7 +43,7 @@ function CustomDataGrid<T extends { id: string | number }>({
         }
     }, [page, rows, fetchUrl, pageSize]);
 
-    // اضافه کردن ستون اکشن
+
     const finalColumns: GridColDef[] = [...columns];
     if (enableActions && onActionClick) {
         finalColumns.push({
@@ -51,8 +52,15 @@ function CustomDataGrid<T extends { id: string | number }>({
             sortable: false,
             filterable: false,
             width: 150,
+            headerAlign:"center",
+            pinnable:false,
+
             renderCell: (params) => (
-                <button onClick={() => onActionClick(params.row)}>جزئیات</button>
+                <div style={{textAlign:'center'}}>
+                    <IconButton title={'جزئیات'} onClick={() => onActionClick(params.row)} aria-label="delete" size="small">
+                        <DeleteIcon fontSize="inherit" />
+                    </IconButton>
+                </div>
             ),
         });
     }
@@ -79,8 +87,10 @@ function CustomDataGrid<T extends { id: string | number }>({
                             count !== 1 ? `${count.toLocaleString()} ردیف انتخاب شده` : `${count.toLocaleString()} ردیف انتخاب شده`,
                         footerTotalRows: "تعداد کل ردیف‌ها:",
                         paginationRowsPerPage:"ردیف در هر صفحه",
+
                     }}
                     sx={{
+
                         "& .MuiDataGrid-columnHeaders": {
                             backgroundColor: "#f5f5f5",
                             fontWeight: "bold",
@@ -90,6 +100,12 @@ function CustomDataGrid<T extends { id: string | number }>({
                             fontWeight: "bold",
                             width: "100%",
                             textAlign: "center",
+                        },
+                        '& .MuiDataGrid-cell:focus': {
+                            outline: 'none',
+                        },
+                        '& .MuiDataGrid-cell:focus-within': {
+                            outline: 'none',
                         },
                     }}
                 />

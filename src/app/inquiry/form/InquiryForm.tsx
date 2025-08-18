@@ -14,7 +14,6 @@ import {
 import InquiryService from "../service/InquiryService";
 import InquiryModel from "../model/InquiryModel";
 import {useTranslation} from "react-i18next";
-import DataGrid from "../../../base/component/datagrid/CustomDataGrid";
 import {GridColDef} from "@mui/x-data-grid";
 import CustomDataGrid from "../../../base/component/datagrid/CustomDataGrid";
 
@@ -72,7 +71,7 @@ const InquiryForm: React.FC = () => {
                     <AppBar position="static">
                         <Toolbar>
                             <Typography variant="h6" dir={'rtl'} sx={{flexGrow: 1}}>
-                                {t('inquiryList')}
+                                {t('ایست استعلام')}
                             </Typography>
                             <Typography variant="body1">
                                 {phoneNumber}

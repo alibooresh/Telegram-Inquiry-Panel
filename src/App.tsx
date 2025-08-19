@@ -1,23 +1,25 @@
 import React, {Suspense} from 'react';
-import logo from './logo.svg';
 import './App.css';
-import Example from "./app/example/form/ExampleForm";
-import LanguageSwitcher from "./base/languageswitcher/LanguageSwitcher";
 import LoginForm from "./app/login/form/LoginForm";
 import InquiryForm from "./app/inquiry/form/InquiryForm";
-import {BrowserRouter, Route, Routes} from "react-router-dom";
+import {Route, Routes} from "react-router-dom";
 import InquiryDetailForm from "./app/inquirydetail/form/InquiryDetailForm";
+import ProfileForm from "./app/profile/form/ProfileForm";
+import NewInquiryForm from "./app/inquiry/form/NewInquiryForm";
+
 
 function App() {
-  return (
-          <Suspense>
-              <Routes>
-                  <Route path="/login" element={<LoginForm/>}/>
-                  <Route path="/inquiry" element={<InquiryForm/>}/>
-                  <Route path="/inquiry/*" element={<InquiryDetailForm/>}/>
-              </Routes>
-          </Suspense>
-  );
+    return (
+        <Suspense>
+            <Routes>
+                <Route path="/" element={<ProfileForm/>}/>
+                <Route path="/login" element={<LoginForm/>}/>
+                <Route path="/inquiry" element={<InquiryForm/>}/>
+                <Route path="/inquiry/new" element={<NewInquiryForm/>}/>
+                <Route path="/inquiryDetail" element={<InquiryDetailForm/>}/>
+            </Routes>
+        </Suspense>
+    );
 }
 
 export default App;

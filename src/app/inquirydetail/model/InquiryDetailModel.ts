@@ -4,4 +4,5 @@ export default interface InquiryDetailModel {
     firstName: string;
     lastName: string;
     username: string;
+    phoneNumber: string;
 }

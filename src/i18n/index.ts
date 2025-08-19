@@ -1,22 +1,25 @@
+// i18n.ts
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
-import LanguageDetector from "i18next-browser-languagedetector";
 
-import fa from "./locales/fa.json";
-import en from "./locales/en.json";
-
-i18n
-    .use(LanguageDetector)
-    .use(initReactI18next)
-    .init({
-        resources: {
-            fa: { translation: fa },
-            en: { translation: en },
+i18n.use(initReactI18next).init({
+    resources: {
+        en: {
+            translation: {
+                username_required: "Username is required",
+            },
         },
-        fallbackLng: "en",
-        interpolation: {
-            escapeValue: false,
+        fa: {
+            translation: {
+                username_required: "نام کاربری الزامی است",
+            },
         },
-    });
+    },
+    lng: "fa", // زبان پیش‌فرض
+    fallbackLng: "en",
+    interpolation: {
+        escapeValue: false,
+    },
+});
 
 export default i18n;

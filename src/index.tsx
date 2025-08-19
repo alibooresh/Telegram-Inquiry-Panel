@@ -3,17 +3,27 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import "./i18n";
-import {createTheme, ThemeProvider} from "@mui/material";
+import {createTheme, CssBaseline, ThemeProvider} from "@mui/material";
 import {faIR} from "@mui/material/locale";
 import {BrowserRouter, Route, Routes} from "react-router-dom";
-import LoginForm from "./app/login/form/LoginForm";
-import InquiryForm from "./app/inquiry/form/InquiryForm";
+
 
 
 
 const theme = createTheme(
     {
+        components: {
+            MuiCssBaseline: {
+                styleOverrides: {
+                    body: {
+                        margin: 0,
+                        minHeight: "100vh",
+                        background: "linear-gradient(to top, #09203f 50%, #537895 100%)",
+                        backgroundAttachment: "fixed",
+                    },
+                },
+            },
+        },
         direction: 'rtl',
         palette: {
             primary: { main: '#1976d2' },
@@ -30,6 +40,7 @@ const root = ReactDOM.createRoot(
 root.render(
     <BrowserRouter>
         <ThemeProvider theme={theme}>
+            <CssBaseline />
             <App />
         </ThemeProvider>
     </BrowserRouter>

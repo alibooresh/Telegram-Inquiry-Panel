@@ -14,5 +14,6 @@
   "name": "نام",
   "userId": "شناسه کاربر",
   "username": "یوزرنیم",
-  "inquiryDetailList": "لیست جزئیات استعلام"
+  "inquiryDetailList": "لیست جزئیات استعلام",
+  "userProfile": "پروفایل کاربر"
 }

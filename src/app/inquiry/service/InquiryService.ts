@@ -3,7 +3,10 @@ import InquiryModel from "../model/InquiryModel";
 
 class InquiryService {
     inquiryList = (data: any) => {
-        return api.post<InquiryModel[]>("/auth/login", data);
+        return api.post<InquiryModel[]>("/inquiry/search", data);
+    };
+    startInquiry = (data: any) => {
+        return api.post("/inquiry/start", data);
     };
 }
 

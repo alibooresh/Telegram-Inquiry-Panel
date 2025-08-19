@@ -1,25 +1,33 @@
-import React, { useEffect, useState } from "react";
-import { DataGrid, GridColDef, GridRowsProp } from "@mui/x-data-grid";
-import {CircularProgress, Box, IconButton} from "@mui/material";
+import React, {ReactNode, useEffect, useState} from "react";
+import {DataGrid, GridColDef, GridRowsProp} from "@mui/x-data-grid";
+import {Box, CircularProgress, IconButton} from "@mui/material";
 import api from "../../axios/axios.config";
 import DeleteIcon from '@mui/icons-material/Delete';
+import {AxiosRequestConfig} from "axios";
 
 interface CustomDataGridProps<T> {
     columns: GridColDef[];
     rows?: T[];
-    fetchUrl?: string;
+    requestConfig?: AxiosRequestConfig;
     pageSize?: number;
     enableActions?: boolean;
-    onActionClick?: (row: T) => void;
+    actions?: GridAction<T>[];
+}
+
+export interface GridAction<T = any> {
+    label: string;
+    icon?: ReactNode;
+    onClick: (row: T) => void;
+    color?:'inherit' | 'default' | 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning';
 }
 
 function CustomDataGrid<T extends { id: string | number }>({
                                                                columns,
                                                                rows,
-                                                               fetchUrl,
-                                                               pageSize = 10,
+                                                               requestConfig,
+                                                               pageSize = 5,
                                                                enableActions = false,
-                                                               onActionClick,
+                                                               actions = [],
                                                            }: CustomDataGridProps<T>) {
     const [data, setData] = useState<GridRowsProp>([]);
     const [loading, setLoading] = useState(false);
@@ -28,57 +36,73 @@ function CustomDataGrid<T extends { id: string | number }>({
 
 
     useEffect(() => {
-        if (fetchUrl) {
+        if (requestConfig) {
             setLoading(true);
             api
-                .get(fetchUrl, { params: { page: page + 1, size: pageSize } })
+                .get(requestConfig.url!, {
+                    params:
+                        {
+                            ...requestConfig.params,
+                            page: page,
+                            size: pageSize
+                        }
+                })
                 .then((res) => {
-                    setData(res.data.items);
-                    setRowCount(res.data.total);
+
+                    setData(res.data.content);
+                    setRowCount(res.data.totalElements);
                 })
                 .finally(() => setLoading(false));
         } else if (rows) {
             setRowCount(rows.length);
             setData(rows.slice(page * pageSize, (page + 1) * pageSize));
         }
-    }, [page, rows, fetchUrl, pageSize]);
+    }, [page, rows, requestConfig, pageSize]);
 
 
     const finalColumns: GridColDef[] = [...columns];
-    if (enableActions && onActionClick) {
+
+    if (enableActions && actions?.length) {
         finalColumns.push({
             field: "actions",
             headerName: "عملیات",
             sortable: false,
             filterable: false,
             width: 150,
-            headerAlign:"center",
-            pinnable:false,
-
+            headerAlign: "center",
+            pinnable: false,
             renderCell: (params) => (
-                <div style={{textAlign:'center'}}>
-                    <IconButton title={'جزئیات'} onClick={() => onActionClick(params.row)} aria-label="delete" size="small">
-                        <DeleteIcon fontSize="inherit" />
-                    </IconButton>
+                <div style={{ display: "flex", gap: "4px", justifyContent: "center" }}>
+                    {actions.map((action, index) => (
+                        <IconButton
+                            key={index}
+                            color={action.color || "primary"}
+                            title={action.label}
+                            onClick={() => action.onClick(params.row)}
+                            size="small"
+                        >
+                            {action.icon}
+                        </IconButton>
+                    ))}
                 </div>
             ),
         });
     }
 
     return (
-        <Box sx={{ height: 500, width: "100%" }}>
+        <Box sx={{height: 500, width: "100%"}}>
             {loading ? (
                 <Box display="flex" justifyContent="center" alignItems="center" height="100%">
-                    <CircularProgress />
+                    <CircularProgress/>
                 </Box>
             ) : (
                 <DataGrid
                     rows={data}
                     columns={finalColumns}
                     pagination
-                    paginationMode={fetchUrl ? "server" : "client"}
+                    paginationMode={requestConfig ? "server" : "client"}
                     rowCount={rowCount}
-                    paginationModel={{ pageSize, page }}
+                    paginationModel={{pageSize, page}}
                     onPaginationModelChange={(model) => setPage(model.page)}
                     pageSizeOptions={[5, 10, 20]}
                     localeText={{
@@ -86,7 +110,7 @@ function CustomDataGrid<T extends { id: string | number }>({
                         footerRowSelected: (count) =>
                             count !== 1 ? `${count.toLocaleString()} ردیف انتخاب شده` : `${count.toLocaleString()} ردیف انتخاب شده`,
                         footerTotalRows: "تعداد کل ردیف‌ها:",
-                        paginationRowsPerPage:"ردیف در هر صفحه",
+                        paginationRowsPerPage: "ردیف در هر صفحه",
 
                     }}
                     sx={{

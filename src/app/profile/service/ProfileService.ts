@@ -6,6 +6,10 @@ class ProfileService {
         return api.get<UserModel>("/user/getMe");
     };
 
+    logout = () => {
+        return api.get("/auth/logout");
+    };
+
 }
 
 export default ProfileService

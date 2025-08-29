@@ -11,7 +11,7 @@ import Person2Icon from '@mui/icons-material/Person2';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import ListAltIcon from "@mui/icons-material/ListAlt";
 import PublishedWithChangesIcon from '@mui/icons-material/PublishedWithChanges';
-
+import ArrowCircleRightOutlinedIcon from '@mui/icons-material/ArrowCircleRightOutlined';
 const STATUSES = [
     {label: "ذخیره شده", value: "SAVED"},
     {label: "درحال استعلام", value: "STARTED"},
@@ -73,11 +73,11 @@ const InquiryForm: React.FC = () => {
                     }
                     action={
                         <Stack textAlign={"left"} direction="row-reverse">
-                            <IconButton title={"خروج"} color="error"
-                                        onClick={() => navigate("/login")}>
-                                <LogoutIcon/>
+                            <IconButton color="info" title={"بازگشت"}
+                                        onClick={() => navigate(-1)}>
+                                <ArrowCircleRightOutlinedIcon/>
                             </IconButton>
-                            <IconButton color="primary" title={"پروفایل"}
+                            <IconButton color="warning" title={"پروفایل"}
                                         onClick={() => navigate("/")}>
                                 <Person2Icon/>
                             </IconButton>

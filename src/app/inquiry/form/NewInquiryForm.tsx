@@ -6,6 +6,8 @@ import Person2Icon from "@mui/icons-material/Person2";
 import {useNavigate} from "react-router-dom";
 import PersonSearchIcon from "@mui/icons-material/PersonSearch";
 import api from "../../../base/axios/axios.config";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import ArrowCircleRightOutlinedIcon from "@mui/icons-material/ArrowCircleRightOutlined";
 
 const NewInquiryForm = () => {
     const [file, setFile] = useState<File | null>(null);
@@ -58,9 +60,9 @@ const NewInquiryForm = () => {
                 }
                 action={
                     <Stack textAlign={"left"} direction="row-reverse">
-                        <IconButton title={"خروج"} color="error"
-                                    onClick={() => navigate("/login")}>
-                            <LogoutIcon/>
+                        <IconButton color="info" title={"بازگشت"}
+                                    onClick={() => navigate(-1)}>
+                            <ArrowCircleRightOutlinedIcon/>
                         </IconButton>
                         <IconButton color="warning" title={"پروفایل"}
                                     onClick={() => navigate("/")}>

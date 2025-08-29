@@ -33,6 +33,15 @@ const ProfileForm: React.FC = () => {
             }).finally(() => setLoading(false));
         }
     })
+
+    const logout=()=>{
+        setLoading(true);
+        service.logout().then(value => {
+            navigate('login');
+        }).catch(reason => {
+            console.log(reason)
+        }).finally(() => setLoading(false));
+    }
     return (
         <>
             {
@@ -68,7 +77,7 @@ const ProfileForm: React.FC = () => {
                                     action={
                                         <Stack textAlign={"left"} direction="row-reverse">
                                             <IconButton title={"خروج"} color="error"
-                                                        onClick={() => navigate("/login")}>
+                                                        onClick={() => logout()}>
                                                 <LogoutIcon/>
                                             </IconButton>
                                             <IconButton color="primary" title={"استعلام"}

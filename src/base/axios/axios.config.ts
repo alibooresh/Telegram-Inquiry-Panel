@@ -1,37 +1,40 @@
-import axios from "axios";
+// src/axios/axios.config.ts
+import axios, { AxiosError } from "axios";
+import { useError } from "../context/ErrorContext";
 
-// axios instance
 const api = axios.create({
     baseURL: "http://localhost:8080",
     timeout: 10000,
-    headers: {
-        "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
 });
 
-// interceptors to add token to headers
+// Request interceptor برای توکن
 api.interceptors.request.use(
     (config) => {
         const token = localStorage.getItem("token");
-        if (token) {
-            config.headers.Authorization = `Bearer ${token}`;
-        }
+        if (token) config.headers.Authorization = `Bearer ${token}`;
         return config;
     },
     (error) => Promise.reject(error)
 );
 
-// interceptors to handle errors
-api.interceptors.response.use(
-    (response) => response,
-    (error) => {
-        if (error.response?.status === 401) {
-            // for example: token expire
-            localStorage.removeItem("token");
-            window.location.href = "/login";
+// پاسخ‌ها
+export const setupAxiosInterceptors = (showError: (msg: string) => void) => {
+    api.interceptors.response.use(
+        (response) => response,
+        (error: AxiosError) => {
+            if (!error.response) {
+                showError("ارتباط با سرور برقرار نشد!");
+            } else if (error.response.status === 401) {
+                localStorage.removeItem("token");
+                window.location.href = "/login";
+            } else {
+                console.log(error.response.data)
+                showError(error.response.statusText || `خطا: ${error.response.status}`);
+            }
+            return Promise.reject(error);
         }
-        return Promise.reject(error);
-    }
-);
+    );
+};
 
 export default api;

@@ -37,7 +37,6 @@ const Example: React.FC = () => {
         <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh" bgcolor="#f4f6f8">
             <Paper elevation={3} sx={{padding: 4, width: "100%", maxWidth: 400}}>
                 <Typography variant="h5" textAlign="center" mb={3}>
-                    {t('example.title')}
                 </Typography>
                 <Formik
                     initialValues={initialValues}

@@ -1,18 +1,19 @@
-import React, {useEffect, useState} from "react";
+import React, {useState} from "react";
 import {Card, CardContent, CardHeader, IconButton, Stack, Typography} from "@mui/material";
 import InquiryService from "../service/InquiryService";
-import InquiryModel from "../model/InquiryModel";
-import {useTranslation} from "react-i18next";
-import {GridColDef} from "@mui/x-data-grid";
-import CustomDataGrid from "../../../base/component/datagrid/CustomDataGrid";
-import LogoutIcon from "@mui/icons-material/Logout";
 import {useNavigate} from "react-router-dom";
-import Person2Icon from '@mui/icons-material/Person2';
-import AddCircleIcon from '@mui/icons-material/AddCircle';
+import Person2Icon from "@mui/icons-material/Person2";
+import AddCircleIcon from "@mui/icons-material/AddCircle";
 import ListAltIcon from "@mui/icons-material/ListAlt";
-import PublishedWithChangesIcon from '@mui/icons-material/PublishedWithChanges';
-import ArrowCircleRightOutlinedIcon from '@mui/icons-material/ArrowCircleRightOutlined';
-const STATUSES = [
+import PublishedWithChangesIcon from "@mui/icons-material/PublishedWithChanges";
+import ArrowCircleRightOutlinedIcon from "@mui/icons-material/ArrowCircleRightOutlined";
+import CustomDataGrid from "../../../base/component/datagrid/CustomDataGrid";
+import {GridColDef} from "@mui/x-data-grid";
+interface LabelValueModel {
+    label:string,
+    value:string
+}
+const STATUSES:LabelValueModel[] = [
     {label: "ذخیره شده", value: "SAVED"},
     {label: "درحال استعلام", value: "STARTED"},
     {label: "انجام شده", value: "FINISHED"},
@@ -20,148 +21,113 @@ const STATUSES = [
 ];
 
 const InquiryForm: React.FC = () => {
-    const {t} = useTranslation();
     const service = new InquiryService();
-    const [loading, setLoading] = useState(true);
-    const [phoneNumber, setPhoneNumber] = useState<string>("");
-    const [requests, setRequests] = useState<InquiryModel[]>([]);
     const navigate = useNavigate();
-    const [selected, setSelected] = useState<string[]>([]);
     const [statuses, setStatuses] = useState<string[]>([]);
 
-    const handleToggle = (value: string) => {
-        setSelected((prev) => {
-            const newSelected = prev.includes(value)
-                ? prev.filter((x) => x !== value)
-                : [...prev, value];
-            setStatuses(newSelected);
-            return newSelected;
-        });
-    };
-
-    const clearFilter = () => {
-        setSelected([]);
-        setStatuses([]);
-    };
-    useEffect(() => {
-        const storedPhone = localStorage.getItem("phoneNumber");
-        if (storedPhone) setPhoneNumber(storedPhone);
-    }, []);
-    const columns: GridColDef[] = [
-        {field: "id", headerName: "ID", width: 40, headerAlign: "center"},
-        {field: "duration", headerName: "مدت زمان استعلام", width: 200, headerAlign: "center"},
-        {field: "status", headerName: "وضعیت", width: 120, headerAlign: "center"},
-        {field: "createdAt", headerName: "تاریخ ایجاد", width: 250, headerAlign: "center"},
+    const columns: GridColDef<{ id: string | number }>[] = [
+        { field: "id", headerName: "ID", width: 40, headerAlign: "center", type: "number" },
+        { field: "duration", headerName: "مدت زمان استعلام", width: 200, headerAlign: "center", type: "string" },
+        { field: "status", headerName: "وضعیت", width: 120, headerAlign: "center", type: "string", renderCell:(params) => convertStatus(params.value) },
+        { field: "dateFa", headerName: "تاریخ ایجاد", width: 250, headerAlign: "center", type: "string" },
     ];
 
-    const startInquiry = (id:any) => {
-      service.startInquiry({inquiryId:id}).then(value => {
-
-      }).catch(reason => {
-
-      }).finally(() => {});
+    const convertStatus = (status:string) => {
+        let state = STATUSES.filter(value => value.value===status)[0];
+        return state.label;
     }
 
-    return (
-        <>
-            <Card sx={{maxWidth: 800, margin: "2rem auto", borderRadius: 3, boxShadow: 3}}>
-                <CardHeader
-                    title={
-                        <Typography variant="h5" align="right" fontWeight="bold" gutterBottom>
-                            لیست استعلامات
-                        </Typography>
-                    }
-                    action={
-                        <Stack textAlign={"left"} direction="row-reverse">
-                            <IconButton color="info" title={"بازگشت"}
-                                        onClick={() => navigate(-1)}>
-                                <ArrowCircleRightOutlinedIcon/>
-                            </IconButton>
-                            <IconButton color="warning" title={"پروفایل"}
-                                        onClick={() => navigate("/")}>
-                                <Person2Icon/>
-                            </IconButton>
-                            <IconButton color="success" title={"استعلام جدید"}
-                                        onClick={() => navigate("/inquiry/new")}>
-                                <AddCircleIcon/>
-                            </IconButton>
-                        </Stack>
-                    }
-                />
-                <CardContent className={"profile-content"}>
-                    {/*<Box sx={{ p: 2, border: "1px solid #ddd", borderRadius: 2, mb: 2 }}>*/}
-                    {/*    <Typography variant="subtitle1" fontWeight="bold" mb={1}>*/}
-                    {/*        فیلتر وضعیت*/}
-                    {/*    </Typography>*/}
-                    {/*    <FormGroup sx={{display:"block"}}>*/}
-                    {/*        {STATUSES.map((status) => (*/}
-                    {/*            <FormControlLabel*/}
-                    {/*                key={status.value}*/}
-                    {/*                control={*/}
-                    {/*                    <Checkbox*/}
-                    {/*                        checked={selected.includes(status.value)}*/}
-                    {/*                        onChange={() => handleToggle(status.value)}*/}
-                    {/*                    />*/}
-                    {/*                }*/}
-                    {/*                label={status.label}*/}
-                    {/*            />*/}
-                    {/*        ))}*/}
-                    {/*    </FormGroup>*/}
-                    {/*    {selected.length > 0 && (*/}
-                    {/*        <Button size="small" onClick={clearFilter}>*/}
-                    {/*        </Button>*/}
-                    {/*    )}*/}
-                    {/*</Box>*/}
-                    <CustomDataGrid
-                        columns={columns}
-                        requestConfig={{
-                            url: "/inquiry/search",
-                            params: {statuses: statuses}
-                        }}
-                        pageSize={10}
-                        enableActions
-                        actions={[
-                            {
-                                color:"primary",
-                                icon:<ListAltIcon/>,
-                                label:'جزئیات استعلام',
-                                onClick:(row) => navigate("/inquiryDetail", {state: {id: row.id}})
-                            },
-                            {
-                                color:"success",
-                                icon:<PublishedWithChangesIcon/>,
-                                label:'شروع استعلام',
-                                onClick:(row) => startInquiry(row.id)
-                        }
-                            ]}
-                    />
-                </CardContent>
-            </Card>
-            {/*<Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh" bgcolor="#f4f6f8">*/}
-            {/*    <Paper elevation={3} sx={{padding: 4, width: "100%", maxWidth: 800}}>*/}
-            {/*        <Box>*/}
-            {/*            <AppBar position="static">*/}
-            {/*                <Toolbar>*/}
-            {/*                    <Typography variant="h6" dir={'rtl'} sx={{flexGrow: 1}}>*/}
-            {/*                        {t('ایست استعلام')}*/}
-            {/*                    </Typography>*/}
-            {/*                    <Typography variant="body1">*/}
-            {/*                        {phoneNumber}*/}
-            {/*                    </Typography>*/}
-            {/*                </Toolbar>*/}
-            {/*            </AppBar>*/}
-            {/*            <CustomDataGrid*/}
-            {/*                columns={columns}*/}
-            {/*                rows={mockInquiries}*/}
-            {/*                pageSize={10}*/}
-            {/*                enableActions*/}
-            {/*                onActionClick={(row) => alert("جزئیات رکورد: " + row.id)}*/}
-            {/*            />*/}
-            {/*        </Box>*/}
-            {/*    </Paper>*/}
-            {/*</Box>*/}
+    const startInquiry = (id: any) => {
+        service
+            .startInquiry({inquiryId: id})
+            .then(() => {
+            })
+            .catch(() => {
+            })
+            .finally(() => {
+            });
+    };
 
-        </>
+    return (
+        <Card
+            sx={{
+                width: "100%",
+                height: "100%",
+                borderRadius: 3,
+                boxShadow: "0 8px 32px rgba(0,0,0,0.37)",
+                backdropFilter: "blur(14px)",
+                background: "rgba(30,30,40,0.6)",
+                border: "1px solid rgba(255,255,255,0.1)",
+                color: "#e3f2fd",
+            }}
+        >
+            <CardHeader
+                title={
+                    <Typography
+                        variant="h5"
+                        align="right"
+                        fontWeight="bold"
+                        gutterBottom
+                        sx={{color: "#e3f2fd"}}
+                    >
+                        لیست استعلامات
+                    </Typography>
+                }
+                action={
+                    <Stack direction="row-reverse" spacing={1}>
+                        <IconButton
+                            color="info"
+                            title="بازگشت"
+                            onClick={() => navigate(-1)}
+                            sx={{color: "#90caf9"}}
+                        >
+                            <ArrowCircleRightOutlinedIcon/>
+                        </IconButton>
+                        <IconButton
+                            color="warning"
+                            title="پروفایل"
+                            onClick={() => navigate("/profile")}
+                            sx={{color: "#ffb74d"}}
+                        >
+                            <Person2Icon/>
+                        </IconButton>
+                        <IconButton
+                            color="success"
+                            title="استعلام جدید"
+                            onClick={() => navigate("/inquiry/new")}
+                            sx={{color: "#81c784"}}
+                        >
+                            <AddCircleIcon/>
+                        </IconButton>
+                    </Stack>
+                }
+            />
+            <CardContent sx={{p: 2}}>
+                <CustomDataGrid
+                    columns={columns}
+                    requestConfig={{
+                        url: "/inquiry/search",
+                        params: {statuses: statuses},
+                    }}
+                    pageSize={10}
+                    enableActions
+                    actions={[
+                        {
+                            color: "primary",
+                            icon: <ListAltIcon/>,
+                            label: "جزئیات استعلام",
+                            onClick: (row) => navigate("/inquiryDetail", {state: {id: row.id}}),
+                        },
+                        {
+                            color: "success",
+                            icon: <PublishedWithChangesIcon/>,
+                            label: "شروع استعلام",
+                            onClick: (row) => startInquiry(row.id),
+                        },
+                    ]}
+                />
+            </CardContent>
+        </Card>
 
     );
 };

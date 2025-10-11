@@ -1,33 +1,19 @@
 import React, {useEffect, useState} from "react";
-import {
-    AppBar,
-    Box, Button, Card, CardContent, CardHeader, Checkbox,
-    CircularProgress,
-    Divider, FormControlLabel, FormGroup, IconButton,
-    List,
-    ListItem,
-    ListItemText,
-    Paper, Stack,
-    Toolbar,
-    Typography
-} from "@mui/material";
+import {Card, CardContent, CardHeader, IconButton, Stack, Typography} from "@mui/material";
 import {useTranslation} from "react-i18next";
 import InquiryDetailService from "../service/InquiryDetailService";
-import InquiryDetailModel from "../model/InquiryDetailModel";
-import {DataGrid, GridColDef} from '@mui/x-data-grid';
-import LogoutIcon from "@mui/icons-material/Logout";
+import {GridColDef} from '@mui/x-data-grid';
 import Person2Icon from "@mui/icons-material/Person2";
 import CustomDataGrid from "../../../base/component/datagrid/CustomDataGrid";
 import {useLocation, useNavigate} from "react-router-dom";
 import ListAltIcon from '@mui/icons-material/ListAlt';
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowCircleRightOutlinedIcon from "@mui/icons-material/ArrowCircleRightOutlined";
 
 const STATUSES = [
-    { label: "ذخیره شده", value: "SAVED" },
-    { label: "درحال استعلام", value: "STARTED" },
-    { label: "انجام شده", value: "FINISHED" },
-    { label: "ناموفق", value: "FAILED" },
+    {label: "ذخیره شده", value: "SAVED"},
+    {label: "درحال استعلام", value: "STARTED"},
+    {label: "انجام شده", value: "FINISHED"},
+    {label: "ناموفق", value: "FAILED"},
 ];
 
 const InquiryForm: React.FC = () => {
@@ -46,14 +32,23 @@ const InquiryForm: React.FC = () => {
 
     const columns: GridColDef[] = [
         {field: "id", headerName: "ID", width: 100, headerAlign: "center"},
-        {field: "userId", headerName: "شناسه کاربر", groupable:true, width: 200, headerAlign: "center"},
+        {field: "userId", headerName: "شناسه کاربر", groupable: true, width: 200, headerAlign: "center"},
         {field: "firstName", headerName: "نام", width: 100, headerAlign: "center"},
         {field: "lastName", headerName: "نام خانوادگی", width: 100, headerAlign: "center"},
         {field: "phoneNumber", headerName: "شماره تلفن", width: 120, headerAlign: "center"}
     ];
 
     return (
-        <Card sx={{maxWidth: 800, margin: "2rem auto", borderRadius: 3, boxShadow: 3}}>
+        <Card sx={{
+            width: "100%",
+            height: "100%",
+            borderRadius: 3,
+            boxShadow: "0 8px 32px rgba(0,0,0,0.37)",
+            backdropFilter: "blur(14px)",
+            background: "rgba(30,30,40,0.6)",
+            border: "1px solid rgba(255,255,255,0.1)",
+            color: "#e3f2fd",
+        }}>
             <CardHeader
                 title={
                     <Typography variant="h5" align="right" fontWeight="bold" gutterBottom>
@@ -84,10 +79,10 @@ const InquiryForm: React.FC = () => {
                     enableActions
                     actions={[
                         {
-                            color:"primary",
-                            icon:<ListAltIcon/>,
-                            label:'جزئیات',
-                            onClick:(row) => navigate("/inquiryDetail/view", {state: {id: row.id}})
+                            color: "primary",
+                            icon: <ListAltIcon/>,
+                            label: 'جزئیات',
+                            onClick: (row) => navigate("/inquiryDetail/view", {state: {id: row.id}})
                         }
                     ]}
                 />

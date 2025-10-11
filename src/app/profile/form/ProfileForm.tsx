@@ -25,16 +25,16 @@ const ProfileForm: React.FC = () => {
     const service = new ProfileService();
     const navigate = useNavigate();
     useEffect(() => {
-        if (user.id==null){
+        if (user.id == null) {
             service.getMe().then(value => {
                 setUser(value.data);
             }).catch(reason => {
-                setUser({...user,id:0});
+                setUser({...user, id: 0});
             }).finally(() => setLoading(false));
         }
     })
 
-    const logout=()=>{
+    const logout = () => {
         setLoading(true);
         service.logout().then(value => {
             navigate('login');
@@ -46,7 +46,16 @@ const ProfileForm: React.FC = () => {
         <>
             {
                 loading ?
-                    <Card sx={{maxWidth: 800, margin: "2rem auto", borderRadius: 3, boxShadow: 3}}>
+                    <Card sx={{
+                        width: "100%",
+                        height: "100%",
+                        borderRadius: 3,
+                        boxShadow: "0 8px 32px rgba(0,0,0,0.37)",
+                        backdropFilter: "blur(14px)",
+                        background: "rgba(30,30,40,0.6)",
+                        border: "1px solid rgba(255,255,255,0.1)",
+                        color: "#e3f2fd",
+                    }}>
                         <CardContent className={"profile-content"}>
                             <CircularProgress/>
                         </CardContent>
@@ -54,7 +63,16 @@ const ProfileForm: React.FC = () => {
                     :
                     <>
                         {user.id == null ?
-                            <Card sx={{maxWidth: 800, margin: "2rem auto", borderRadius: 3, boxShadow: 3}}>
+                            <Card sx={{
+                                width: "100%",
+                                height: "100%",
+                                borderRadius: 3,
+                                boxShadow: "0 8px 32px rgba(0,0,0,0.37)",
+                                backdropFilter: "blur(14px)",
+                                background: "rgba(30,30,40,0.6)",
+                                border: "1px solid rgba(255,255,255,0.1)",
+                                color: "#e3f2fd",
+                            }}>
                                 <CardContent className={"profile-content"}>
                                     <Typography variant="h5" align="center" fontWeight="bold" gutterBottom>
                                         پروفایل کاربر
@@ -67,7 +85,16 @@ const ProfileForm: React.FC = () => {
                                 </CardContent>
                             </Card>
                             :
-                            <Card sx={{maxWidth: 800, margin: "2rem auto", borderRadius: 3, boxShadow: 3}}>
+                            <Card sx={{
+                                width: "100%",
+                                height: "100%",
+                                borderRadius: 3,
+                                boxShadow: "0 8px 32px rgba(0,0,0,0.37)",
+                                backdropFilter: "blur(14px)",
+                                background: "rgba(30,30,40,0.6)",
+                                border: "1px solid rgba(255,255,255,0.1)",
+                                color: "#e3f2fd",
+                            }}>
                                 <CardHeader
                                     title={
                                         <Typography variant="h5" align="right" fontWeight="bold" gutterBottom>

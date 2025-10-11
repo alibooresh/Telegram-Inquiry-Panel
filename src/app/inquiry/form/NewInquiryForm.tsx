@@ -1,12 +1,10 @@
 import React, {useState} from "react";
 import {Button, Card, CardContent, CardHeader, IconButton, LinearProgress, Stack, Typography,} from "@mui/material";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-import LogoutIcon from "@mui/icons-material/Logout";
 import Person2Icon from "@mui/icons-material/Person2";
 import {useNavigate} from "react-router-dom";
 import PersonSearchIcon from "@mui/icons-material/PersonSearch";
 import api from "../../../base/axios/axios.config";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowCircleRightOutlinedIcon from "@mui/icons-material/ArrowCircleRightOutlined";
 
 const NewInquiryForm = () => {
@@ -51,7 +49,16 @@ const NewInquiryForm = () => {
     };
 
     return (
-        <Card sx={{maxWidth: 800, margin: "2rem auto", borderRadius: 3, boxShadow: 3}}>
+        <Card sx={{
+            width: "100%",
+            height: "100%",
+            borderRadius: 3,
+            boxShadow: "0 8px 32px rgba(0,0,0,0.37)",
+            backdropFilter: "blur(14px)",
+            background: "rgba(30,30,40,0.6)",
+            border: "1px solid rgba(255,255,255,0.1)",
+            color: "#e3f2fd",
+        }}>
             <CardHeader
                 title={
                     <Typography variant="h5" align="right" fontWeight="bold" gutterBottom>

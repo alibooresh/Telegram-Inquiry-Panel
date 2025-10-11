@@ -1,9 +1,8 @@
-import React, {ReactNode, useEffect, useState} from "react";
-import {DataGrid, GridColDef, GridRowsProp} from "@mui/x-data-grid";
-import {Box, CircularProgress, IconButton} from "@mui/material";
+import React, { ReactNode, useEffect, useState } from "react";
+import { DataGrid, GridColDef, GridRowsProp } from "@mui/x-data-grid";
+import { Box, CircularProgress, IconButton } from "@mui/material";
 import api from "../../axios/axios.config";
-import DeleteIcon from '@mui/icons-material/Delete';
-import {AxiosRequestConfig} from "axios";
+import { AxiosRequestConfig } from "axios";
 
 interface CustomDataGridProps<T> {
     columns: GridColDef[];
@@ -18,14 +17,22 @@ export interface GridAction<T = any> {
     label: string;
     icon?: ReactNode;
     onClick: (row: T) => void;
-    color?:'inherit' | 'default' | 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning';
+    color?:
+        | "inherit"
+        | "default"
+        | "primary"
+        | "secondary"
+        | "error"
+        | "info"
+        | "success"
+        | "warning";
 }
 
 function CustomDataGrid<T extends { id: string | number }>({
                                                                columns,
                                                                rows,
                                                                requestConfig,
-                                                               pageSize = 5,
+                                                               pageSize = 10,
                                                                enableActions = false,
                                                                actions = [],
                                                            }: CustomDataGridProps<T>) {
@@ -34,21 +41,18 @@ function CustomDataGrid<T extends { id: string | number }>({
     const [page, setPage] = useState(0);
     const [rowCount, setRowCount] = useState(0);
 
-
     useEffect(() => {
         if (requestConfig) {
             setLoading(true);
             api
                 .get(requestConfig.url!, {
-                    params:
-                        {
-                            ...requestConfig.params,
-                            page: page,
-                            size: pageSize
-                        }
+                    params: {
+                        ...requestConfig.params,
+                        page: page,
+                        size: pageSize,
+                    },
                 })
                 .then((res) => {
-
                     setData(res.data.content);
                     setRowCount(res.data.totalElements);
                 })
@@ -70,9 +74,8 @@ function CustomDataGrid<T extends { id: string | number }>({
             filterable: false,
             width: 150,
             headerAlign: "center",
-            pinnable: false,
             renderCell: (params) => (
-                <div style={{ display: "flex", gap: "4px", justifyContent: "center" }}>
+                <Box display="flex" gap={1} justifyContent="center">
                     {actions.map((action, index) => (
                         <IconButton
                             key={index}
@@ -84,16 +87,29 @@ function CustomDataGrid<T extends { id: string | number }>({
                             {action.icon}
                         </IconButton>
                     ))}
-                </div>
+                </Box>
             ),
         });
     }
 
     return (
-        <Box sx={{height: 500, width: "100%"}}>
+        <Box
+            sx={{
+                flexGrow: 1,
+                height: "100%",
+                background: "rgba(30,30,40,0.6)",
+                backdropFilter: "blur(14px)",
+                border: "1px solid rgba(255,255,255,0.1)",
+                borderRadius: 2,
+                color: "#e3f2fd",
+                overflow: "hidden",
+                display: "flex",
+                flexDirection: "column",
+            }}
+        >
             {loading ? (
-                <Box display="flex" justifyContent="center" alignItems="center" height="100%">
-                    <CircularProgress/>
+                <Box display="flex" justifyContent="center" alignItems="center" flexGrow={1}>
+                    <CircularProgress color="info" />
                 </Box>
             ) : (
                 <DataGrid
@@ -102,35 +118,42 @@ function CustomDataGrid<T extends { id: string | number }>({
                     pagination
                     paginationMode={requestConfig ? "server" : "client"}
                     rowCount={rowCount}
-                    paginationModel={{pageSize, page}}
+                    paginationModel={{ pageSize, page }}
                     onPaginationModelChange={(model) => setPage(model.page)}
                     pageSizeOptions={[5, 10, 20]}
                     localeText={{
                         noRowsLabel: "هیچ داده‌ای برای نمایش وجود ندارد",
                         footerRowSelected: (count) =>
-                            count !== 1 ? `${count.toLocaleString()} ردیف انتخاب شده` : `${count.toLocaleString()} ردیف انتخاب شده`,
+                            count !== 1
+                                ? `${count.toLocaleString()} ردیف انتخاب شده`
+                                : `${count.toLocaleString()} ردیف انتخاب شده`,
                         footerTotalRows: "تعداد کل ردیف‌ها:",
                         paginationRowsPerPage: "ردیف در هر صفحه",
-
                     }}
                     sx={{
-
+                        "& .MuiDataGrid-root": {
+                            border: "none",
+                            color: "#e3f2fd",
+                            backgroundColor: "transparent",
+                        },
                         "& .MuiDataGrid-columnHeaders": {
-                            backgroundColor: "#f5f5f5",
+                            backgroundColor: "rgba(50,50,60,0.6)",
+                            color: "#117fd0",
                             fontWeight: "bold",
-                            textAlign: "center"
                         },
                         "& .MuiDataGrid-columnHeaderTitle": {
                             fontWeight: "bold",
-                            width: "100%",
                             textAlign: "center",
                         },
-                        '& .MuiDataGrid-cell:focus': {
-                            outline: 'none',
+                        "& .MuiDataGrid-cell": {
+                            borderBottom: "1px solid rgba(255,255,255,0.1)",
                         },
-                        '& .MuiDataGrid-cell:focus-within': {
-                            outline: 'none',
+                        "& .MuiDataGrid-footerContainer": {
+                            backgroundColor: "rgba(50,50,60,0.6)",
+                            color: "#e3f2fd",
                         },
+                        '& .MuiDataGrid-cell:focus': { outline: 'none' },
+                        '& .MuiDataGrid-cell:focus-within': { outline: 'none' },
                     }}
                 />
             )}

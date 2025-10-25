@@ -1,16 +1,16 @@
 import React, {useEffect} from "react";
 import {
     AppBar,
-    Toolbar,
-    Typography,
+    Box,
     Drawer,
     List,
     ListItemButton,
     ListItemIcon,
     ListItemText,
-    Box,
+    Toolbar,
+    Typography,
 } from "@mui/material";
-import {Home, ListAlt, Add, Person,Logout,SystemSecurityUpdateGood,PersonPin} from "@mui/icons-material";
+import {Home, ListAlt, PersonPin} from "@mui/icons-material";
 import {useNavigate} from "react-router-dom";
 import {useError} from "../base/context/ErrorContext";
 import {setupAxiosInterceptors} from "../base/axios/axios.config";
@@ -19,18 +19,18 @@ const drawerWidth = 210;
 
 const MainLayout: React.FC<{ children: React.ReactNode }> = ({children}) => {
     const navigate = useNavigate();
-    const { showError } = useError();
+    const {showError} = useError();
     useEffect(() => {
         setupAxiosInterceptors(showError);
     }, [showError]);
     const menuItems = [
         {text: "داشبورد", icon: <Home/>, path: "/"},
         {text: "لیست استعلامات", icon: <ListAlt/>, path: "/inquiry"},
-        {text: "استعلام جدید", icon: <Add/>, path: "/inquiry/new"},
-        {text: "استعلام تکی", icon: <SystemSecurityUpdateGood/>, path: "/inquiryDetail/new"},
+        // {text: "استعلام جدید", icon: <Add/>, path: "/inquiry/new"},
+        // {text: "استعلام تکی", icon: <SystemSecurityUpdateGood/>, path: "/inquiryDetail/new"},
         {text: "استعلام Sherlock", icon: <PersonPin/>, path: "/sherlock"},
-        {text: "پروفایل کاربر", icon: <Person/>, path: "/profile"},
-        {text: "خروج", icon: <Logout/>, path: "/login"},
+        // {text: "پروفایل کاربر", icon: <Person/>, path: "/profile"},
+        // {text: "خروج", icon: <Logout/>, path: "/login"},
     ];
 
     return (
@@ -72,7 +72,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({children}) => {
                     },
                 }}
             >
-                <Toolbar />
+                <Toolbar/>
                 <Box sx={{overflow: "auto", mt: 2}}>
                     <List>
                         {menuItems.map((item, index) => (

@@ -1,94 +1,164 @@
-import React, {useEffect, useState} from "react";
-import {Card, CardContent, CardHeader, IconButton, Stack, Typography} from "@mui/material";
-import {useTranslation} from "react-i18next";
-import InquiryDetailService from "../service/InquiryDetailService";
-import {GridColDef} from '@mui/x-data-grid';
-import Person2Icon from "@mui/icons-material/Person2";
-import CustomDataGrid from "../../../base/component/datagrid/CustomDataGrid";
-import {useLocation, useNavigate} from "react-router-dom";
-import ListAltIcon from '@mui/icons-material/ListAlt';
-import ArrowCircleRightOutlinedIcon from "@mui/icons-material/ArrowCircleRightOutlined";
+import React, { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
+import axios from "axios";
+import {
+    Card,
+    CardContent,
+    Typography,
+    CircularProgress,
+    List,
+    ListItem,
+    ListItemText,
+    Divider,
+} from "@mui/material";
 
-const STATUSES = [
-    {label: "ذخیره شده", value: "SAVED"},
-    {label: "درحال استعلام", value: "STARTED"},
-    {label: "انجام شده", value: "FINISHED"},
-    {label: "ناموفق", value: "FAILED"},
-];
-
-const InquiryForm: React.FC = () => {
-    const {t} = useTranslation();
-    const service = new InquiryDetailService();
-    const [loading, setLoading] = useState(true);
-    const [phoneNumber, setPhoneNumber] = useState<string>("");
-    const navigate = useNavigate();
+interface response {
+    id: number|null,
+    username: string,
+    start_time: string,
+    end_time:string,
+    total_sites: number,
+    finished: boolean,
+    details: Details[],
+}
+interface Details {
+    site:string,
+    url:string
+}
+const InquiryDetail = () => {
     const location = useLocation();
-    const id = location.state.id;
+    const { id } = location.state || {};
+
+    // 🔹 مدل داده‌ی اولیه
+    const initialData = {
+        id: null,
+        username: "",
+        start_time: "",
+        end_time: "",
+        total_sites: 0,
+        finished: false,
+        details: [],
+    };
+
+    const [data, setData] = useState<response>(initialData);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const storedPhone = localStorage.getItem("phoneNumber");
-        if (storedPhone) setPhoneNumber(storedPhone);
-    }, []);
+        if (id) {
+            axios
+                .get(`http://212.23.201.242:5000/scan/${id}`)
+                .then((res) => {
+                    setData(res.data);
+                })
+                .catch((err) => {
+                    console.error("خطا در دریافت اطلاعات:", err);
+                })
+                .finally(() => setLoading(false));
+        } else {
+            setLoading(false);
+        }
+    }, [id]);
 
-    const columns: GridColDef[] = [
-        {field: "id", headerName: "ID", width: 100, headerAlign: "center"},
-        {field: "userId", headerName: "شناسه کاربر", groupable: true, width: 200, headerAlign: "center"},
-        {field: "firstName", headerName: "نام", width: 100, headerAlign: "center"},
-        {field: "lastName", headerName: "نام خانوادگی", width: 100, headerAlign: "center"},
-        {field: "phoneNumber", headerName: "شماره تلفن", width: 120, headerAlign: "center"}
-    ];
+    if (loading) {
+        return (
+            <div className="flex justify-center items-center h-screen">
+                <CircularProgress />
+            </div>
+        );
+    }
+
+    if (!data.id) {
+        return (
+            <Typography variant="h6" align="center" sx={{ mt: 10 }}>
+                شناسه استعلام نامعتبر است یا داده‌ای برای نمایش وجود ندارد.
+            </Typography>
+        );
+    }
+
+    const foundSites = data.details?.length || 0;
 
     return (
-        <Card sx={{
-            width: "100%",
-            height: "100%",
-            borderRadius: 3,
-            boxShadow: "0 8px 32px rgba(0,0,0,0.37)",
-            backdropFilter: "blur(14px)",
-            background: "rgba(30,30,40,0.6)",
-            border: "1px solid rgba(255,255,255,0.1)",
-            color: "#e3f2fd",
-        }}>
-            <CardHeader
-                title={
-                    <Typography variant="h5" align="right" fontWeight="bold" gutterBottom>
-                        لیست جزئیات استعلام
+        <div className="flex justify-center mt-10">
+            <Card sx={{
+                width: "100%",
+                borderRadius: 3,
+                boxShadow: "0 8px 32px rgba(0,0,0,0.37)",
+                backdropFilter: "blur(14px)",
+                background: "rgba(30,30,40,0.6)",
+                border: "1px solid rgba(255,255,255,0.1)",
+                color: "#e3f2fd",
+            }}>
+                <CardContent>
+                    <Typography variant="h5" gutterBottom>
+                        جزئیات استعلام #{data.id}
                     </Typography>
-                }
-                action={
-                    <Stack textAlign={"left"} direction="row-reverse">
-                        <IconButton color="info" title={"بازگشت"}
-                                    onClick={() => navigate(-1)}>
-                            <ArrowCircleRightOutlinedIcon/>
-                        </IconButton>
-                        <IconButton color="warning" title={"پروفایل"}
-                                    onClick={() => navigate("/")}>
-                            <Person2Icon/>
-                        </IconButton>
-                    </Stack>
-                }
-            />
-            <CardContent className={"profile-content"}>
-                <CustomDataGrid
-                    columns={columns}
-                    requestConfig={{
-                        url: "/inquiryDetail/search",
-                        params: {id: id}
-                    }}
-                    pageSize={10}
-                    enableActions
-                    actions={[
-                        {
-                            color: "primary",
-                            icon: <ListAltIcon/>,
-                            label: 'جزئیات',
-                            onClick: (row) => navigate("/inquiryDetail/view", {state: {id: row.id}})
-                        }
-                    ]}
-                />
-            </CardContent>
-        </Card>
+
+                    <Divider sx={{ mb: 2 }} />
+
+                    <Typography variant="body1">
+                        <strong>وضعیت:</strong>{" "}
+                        {data.finished ? "✅ پایان یافته" : "⏳ در حال انجام"}
+                    </Typography>
+                    <Typography variant="body1">
+                        <strong>نام کاربر:</strong> {data.username || "—"}
+                    </Typography>
+                    <Typography variant="body1">
+                        <strong>تعداد کل سایت‌ها:</strong> {data.total_sites}
+                    </Typography>
+                    <Typography variant="body1">
+                        <strong>تعداد یافته‌ها:</strong> {foundSites}
+                    </Typography>
+                    <Typography variant="body1">
+                        <strong>زمان شروع:</strong>{" "}
+                        {data.start_time
+                            ? new Date(data.start_time).toLocaleString("fa-IR")
+                            : "—"}
+                    </Typography>
+                    <Typography variant="body1">
+                        <strong>زمان پایان:</strong>{" "}
+                        {data.end_time
+                            ? new Date(data.end_time).toLocaleString("fa-IR")
+                            : "—"}
+                    </Typography>
+
+                    <Divider sx={{ my: 2 }} />
+
+                    <Typography variant="h6" gutterBottom>
+                        جزئیات یافته‌ها:
+                    </Typography>
+
+                    {foundSites > 0 ? (
+                        <List>
+                            {data.details.map((d, index) => (
+                                <React.Fragment key={index}>
+                                    <ListItem>
+                                        <ListItemText
+                                            primary={d.site.replace("[+] ", "")}
+                                            secondary={
+                                                <a
+                                                    href={d.url.replace("[+] ", "")}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    style={{ color: "#1976d2" }}
+                                                >
+                                                    {d.url.replace("[+] ", "")}
+                                                </a>
+                                            }
+                                        />
+                                    </ListItem>
+                                    {index < data.details.length - 1 && <Divider />}
+                                </React.Fragment>
+                            ))}
+                        </List>
+                    ) : (
+                        <Typography variant="body2" color="text.secondary">
+                            هیچ نتیجه‌ای یافت نشد.
+                        </Typography>
+                    )}
+                </CardContent>
+            </Card>
+        </div>
     );
 };
 
-export default InquiryForm;
+export default InquiryDetail;

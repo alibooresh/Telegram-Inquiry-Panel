@@ -3,7 +3,7 @@ import axios, { AxiosError } from "axios";
 import { useError } from "../context/ErrorContext";
 
 const api = axios.create({
-    baseURL: "http://localhost:5000",
+    baseURL: "http://212.23.201.242:5000",
     timeout: 120000,
     headers: { "Content-Type": "application/json" },
 });

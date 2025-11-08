@@ -69,8 +69,10 @@ const SherlockForm = () => {
         const fetchSites = async () => {
             try {
                 setLoadingSites(true);
-                const response = await api.get<{ sites: string[] }>("/sites/list"); // مسیر endpoint بک
-                setSiteOptions(response.data.sites);
+                const response = await api.get<{ sites: string[] }>("/sites/list");
+                if (response.status===200 && response.data.sites){
+                    setSiteOptions(response.data.sites);
+                }
             } catch (error) {
                 console.error("خطا در دریافت سایت‌ها:", error);
             } finally {

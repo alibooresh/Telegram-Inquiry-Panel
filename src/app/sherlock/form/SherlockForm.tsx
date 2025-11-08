@@ -39,8 +39,14 @@ const SherlockForm = () => {
         sites_requested: string[];
         username: string;
     }
+    interface ScanResponse {
+        message: string;
+        scan_id: number;
+        username: string;
+        sites: string[];
+    }
 
-    const [resultData, setResultData] = useState<SherlockResponse | null>(null);
+    const [resultData, setResultData] = useState<ScanResponse | null>(null);
 
     const handleSherlock = async () => {
         if (!username || sites.length === 0) {
@@ -48,15 +54,23 @@ const SherlockForm = () => {
             return;
         }
 
-        const requestData: UserSitesRequest = {username, sites};
+        const requestData: UserSitesRequest = { username, sites };
 
         try {
             setLoading(true);
             setMessage(null);
             setResultData(null);
 
-            const response = await api.post<SherlockResponse>("/scan", requestData);
-            setResultData(response.data);
+            const response = await api.post("/scan", requestData);
+            const data = response.data;
+
+            // فقط همین داده‌ها رو نگه داریم
+            setResultData({
+                scan_id: data.scan_id,
+                username: data.username,
+                sites: data.sites,
+                message: data.message
+            });
         } catch (error) {
             console.error(error);
             setMessage("خطا در انجام استعلام ❌");
@@ -216,39 +230,27 @@ const SherlockForm = () => {
                     )}
 
                     {resultData && (
-                        <Box mt={3} p={2}
-                             sx={{background: "rgba(255,255,255,0.05)", borderRadius: 2, textAlign: "left"}}>
+                        <Box
+                            mt={3}
+                            p={2}
+                            sx={{
+                                background: "rgba(255,255,255,0.05)",
+                                borderRadius: 2,
+                                textAlign: "center",
+                            }}
+                        >
                             <Typography variant="body1" fontWeight="bold" mb={1}>
-                                نتیجه استعلام برای <strong>{resultData.username}</strong>:
+                                ✅ {resultData.message}
                             </Typography>
-
-                            {resultData.results.map((line, index) => {
-                                if (line.startsWith("Error:")) {
-                                    return (
-                                        <Typography key={index} variant="body2" color="error">
-                                            {line.replace("Error:", "❌")}
-                                        </Typography>
-                                    );
-                                } else if (line.startsWith("[+]")) {
-                                    // استخراج لینک
-                                    const match = line.match(/\[.+?\] (.+?): (.+)/);
-                                    if (match) {
-                                        const site = match[1];
-                                        const url = match[2];
-                                        return (
-                                            <Typography key={index} variant="body2" color="success.main">
-                                                {site}: <a href={url} target="_blank"
-                                                           rel="noopener noreferrer">{url}</a>
-                                            </Typography>
-                                        );
-                                    }
-                                }
-                                return (
-                                    <Typography key={index} variant="body2" color="info.main">
-                                        {line}
-                                    </Typography>
-                                );
-                            })}
+                            <Typography variant="body2">
+                                شناسه استعلام: <strong>{resultData.scan_id}</strong>
+                            </Typography>
+                            <Typography variant="body2">
+                                کاربر: <strong>{resultData.username}</strong>
+                            </Typography>
+                            <Typography variant="body2">
+                                سایت‌ها: {resultData.sites.join(", ")}
+                            </Typography>
                         </Box>
                     )}
 

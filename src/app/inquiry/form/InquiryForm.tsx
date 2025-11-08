@@ -35,8 +35,6 @@ const InquiryForm: React.FC = () => {
         { field: "id", headerName: "ID", width: 70, headerAlign: "center" },
         { field: "username", headerName: "نام کاربری", width: 180, headerAlign: "center" },
         { field: "total_sites", headerName: "تعداد سایت‌ها", width: 150, headerAlign: "center" },
-        { field: "duration", headerName: "مدت زمان (ثانیه)", width: 180, headerAlign: "center" },
-        { field: "status", headerName: "وضعیت", width: 140, headerAlign: "center" },
         { field: "start_time", headerName: "شروع استعلام", width: 230, headerAlign: "center" },
         { field: "end_time", headerName: "پایان استعلام", width: 230, headerAlign: "center" },
     ];

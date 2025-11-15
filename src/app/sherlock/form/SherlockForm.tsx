@@ -158,8 +158,23 @@ const SherlockForm = () => {
                             maxWidth: 350,
                             mb: 2,
                             ml: 2,
-                            "& input": {color: "#fff"},
-                            "& .MuiInputLabel-root": {color: "#90caf9"},
+                            "& .MuiOutlinedInput-root": {
+                                backgroundColor: "rgba(255,255,255,0.05)",
+                                borderRadius: "8px",
+                                "& fieldset": {
+                                    borderColor: "rgba(144,202,249,0.5)",
+                                },
+                                "&:hover fieldset": {
+                                    borderColor: "rgba(144,202,249,0.9)",
+                                },
+                                "&.Mui-focused fieldset": {
+                                    borderColor: "#90caf9",
+                                    borderWidth: "2px",
+                                },
+                            },
+                            "& .MuiInputLabel-root": { color: "#90caf9" },
+                            "& .MuiInputLabel-root.Mui-focused": { color: "#bbdefb" },
+                            "& input": { color: "#fff" },
                         }}
                     />
 
@@ -195,8 +210,20 @@ const SherlockForm = () => {
                             }}
                             sx={{
                                 color: "#fff",
-                                "& .MuiOutlinedInput-notchedOutline": {borderColor: "#555"},
-                                "&:hover .MuiOutlinedInput-notchedOutline": {borderColor: "#888"},
+                                "& .MuiOutlinedInput-root": {
+                                    backgroundColor: "rgba(255,255,255,0.05)",
+                                    borderRadius: "8px",
+                                },
+                                "& .MuiOutlinedInput-notchedOutline": {
+                                    borderColor: "rgba(144,202,249,0.5)",
+                                },
+                                "&:hover .MuiOutlinedInput-notchedOutline": {
+                                    borderColor: "rgba(144,202,249,0.9)",
+                                },
+                                "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                                    borderColor: "#90caf9",
+                                    borderWidth: "2px",
+                                },
                             }}
                         >
                             {siteOptions.map((site) => (
@@ -217,10 +244,16 @@ const SherlockForm = () => {
                         sx={{
                             height: 56,
                             marginRight: 2,
+                            "&.Mui-disabled": {
+                                backgroundColor: "rgba(144,202,249,0.3) !important",
+                                color: "rgba(255,255,255,0.7) !important",
+                                opacity: 1,
+                            },
                         }}
                     >
                         {loading ? "در حال استعلام..." : "استعلام"}
                     </Button>
+
 
                     {/* پیام‌ها */}
                     {message && (

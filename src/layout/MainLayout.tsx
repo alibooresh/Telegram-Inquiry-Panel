@@ -37,6 +37,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         { text: "داشبورد", icon: <Home />, path: "/" },
         { text: "لیست استعلامات", icon: <ListAlt />, path: "/inquiry" },
         { text: "استعلام Sherlock", icon: <PersonPin />, path: "/sherlock" },
+        { text: "دمو", icon: <Home />, path: "/demo" },
     ];
 
     const drawerContent = (

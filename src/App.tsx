@@ -12,6 +12,7 @@ import {ErrorProvider, useError} from './base/context/ErrorContext';
 import {setupAxiosInterceptors} from "./base/axios/axios.config";
 import NewInquiryDetailForm from "./app/inquirydetail/form/NewInquiryDetailForm";
 import SherlockForm from "./app/sherlock/form/SherlockForm";
+import TestPage from "./app/example/TestPage";
 
 
 function App() {
@@ -28,6 +29,7 @@ function App() {
                         <Route path="/inquiryDetail" element={<InquiryDetailForm/>}/>
                         <Route path="/inquiryDetail/new" element={<NewInquiryDetailForm/>}/>
                         <Route path="/sherlock" element={<SherlockForm/>}/>
+                        <Route path="/demo" element={<TestPage/>}/>
                     </Routes>
                 </Suspense>
             </MainLayout>

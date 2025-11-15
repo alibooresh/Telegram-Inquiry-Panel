@@ -135,15 +135,21 @@ const InquiryDetail = () => {
                                         <ListItemText
                                             primary={d.site.replace("[+] ", "")}
                                             secondary={
-                                                <a
-                                                    href={d.url.replace("[+] ", "")}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    style={{ color: "#1976d2" }}
-                                                >
-                                                    {d.url.replace("[+] ", "")}
-                                                </a>
+                                                (() => {
+                                                    const linkOnly = d.url.replace("[+] ", "").split(": ").slice(1).join(": ");
+                                                    return (
+                                                        <a
+                                                            href={linkOnly}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            style={{ color: "#1976d2" }}
+                                                        >
+                                                            {linkOnly}
+                                                        </a>
+                                                    );
+                                                })()
                                             }
+
                                         />
                                     </ListItem>
                                     {index < data.details.length - 1 && <Divider />}

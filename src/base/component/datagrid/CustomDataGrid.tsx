@@ -1,8 +1,8 @@
-import React, { ReactNode, useEffect, useState } from "react";
-import { DataGrid, GridColDef, GridRowsProp } from "@mui/x-data-grid";
 import { Box, CircularProgress, IconButton } from "@mui/material";
+import { DataGrid, type GridColDef, type GridRowsProp } from "@mui/x-data-grid";
+import type { AxiosRequestConfig } from "axios";
+import { type ReactNode, useEffect, useState } from "react";
 import api from "../../axios/axios.config";
-import { AxiosRequestConfig } from "axios";
 
 interface CustomDataGridProps<T> {
     columns: GridColDef[];
@@ -39,6 +39,7 @@ function CustomDataGrid<T extends { id: string | number }>({
     const [data, setData] = useState<GridRowsProp>([]);
     const [loading, setLoading] = useState(false);
     const [page, setPage] = useState(0);
+    const [pageSizeState, setPageSizeState] = useState(pageSize);
     const [rowCount, setRowCount] = useState(0);
 
     useEffect(() => {
@@ -49,7 +50,7 @@ function CustomDataGrid<T extends { id: string | number }>({
                     params: {
                         ...requestConfig.params,
                         page: page,
-                        size: pageSize,
+                        size: pageSizeState,
                     },
                 })
                 .then((res) => {
@@ -59,12 +60,16 @@ function CustomDataGrid<T extends { id: string | number }>({
                 .finally(() => setLoading(false));
         } else if (rows) {
             setRowCount(rows.length);
-            setData(rows.slice(page * pageSize, (page + 1) * pageSize));
+            setData(rows.slice(page * pageSizeState, (page + 1) * pageSizeState));
         }
-    }, [page, rows, requestConfig, pageSize]);
+    }, [page, rows, requestConfig, pageSizeState]);
 
-
-    const finalColumns: GridColDef[] = [...columns];
+    // وسط‌چین کردن تمام ستون‌ها و اضافه کردن ستون عملیات
+    const finalColumns: GridColDef[] = columns.map(col => ({
+        ...col,
+        headerAlign: "center",
+        align: "center",
+    }));
 
     if (enableActions && actions?.length) {
         finalColumns.push({
@@ -74,6 +79,7 @@ function CustomDataGrid<T extends { id: string | number }>({
             filterable: false,
             width: 150,
             headerAlign: "center",
+            align: "center",
             renderCell: (params) => (
                 <Box display="flex" gap={1} justifyContent="center">
                     {actions.map((action, index) => (
@@ -118,8 +124,11 @@ function CustomDataGrid<T extends { id: string | number }>({
                     pagination
                     paginationMode={requestConfig ? "server" : "client"}
                     rowCount={rowCount}
-                    paginationModel={{ pageSize, page }}
-                    onPaginationModelChange={(model) => setPage(model.page)}
+                    paginationModel={{ page, pageSize: pageSizeState }}
+                    onPaginationModelChange={(model) => {
+                        setPage(model.page);
+                        setPageSizeState(model.pageSize);
+                    }}
                     pageSizeOptions={[5, 10, 20]}
                     localeText={{
                         noRowsLabel: "هیچ داده‌ای برای نمایش وجود ندارد",

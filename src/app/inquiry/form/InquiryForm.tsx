@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import {
+    Box,
     Card,
     CardContent,
     CardHeader,
@@ -122,26 +123,34 @@ const InquiryForm: React.FC = () => {
                 }
             />
 
-            <CardContent sx={{ p: 2 }}>
-                <CustomDataGrid
-                    columns={columns}
-                    requestConfig={{
-                        url: "http://212.23.201.242:5000/inquiry/search",
-                        params: { page: 1, size: 10 },
-                        transformResponse,
-                    }}
-                    pageSize={10}
-                    enableActions
-                    actions={[
-                        {
-                            color: "primary",
-                            icon: <ListAltIcon />,
-                            label: "جزئیات استعلام",
-                            onClick: (row) =>
-                                navigate("/inquiryDetail", { state: { id: row.id } }),
-                        }
-                    ]}
-                />
+            <CardContent
+                sx={{
+                    p: 2,
+                    height: "calc(100vh - 200px)", // ارتفاع کل صفحه - هدر کارت
+                    overflow: "hidden",
+                }}
+            >
+                <Box sx={{ height: "100%", overflow: "auto" }}>
+                    <CustomDataGrid
+                        columns={columns}
+                        requestConfig={{
+                            url: "http://212.23.201.242:5000/inquiry/search",
+                            params: { page: 1, size: 10 },
+                            transformResponse,
+                        }}
+                        pageSize={10}
+                        enableActions
+                        actions={[
+                            {
+                                color: "primary",
+                                icon: <ListAltIcon />,
+                                label: "جزئیات استعلام",
+                                onClick: (row) =>
+                                    navigate("/inquiryDetail", { state: { id: row.id } }),
+                            }
+                        ]}
+                    />
+                </Box>
             </CardContent>
         </Card>
     );

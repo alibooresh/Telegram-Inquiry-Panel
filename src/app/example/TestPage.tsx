@@ -39,7 +39,7 @@ export const terminalColumns: GridColDef[] = [
 ];
 export const terminalRows = [
     {
-        id: 1,               // ← اضافه شد
+        id: 1,
         nbImsi: 1,
         tmsi1: "0x0c28b914",
         tmsi2: null,
@@ -54,7 +54,7 @@ export const terminalRows = [
         timestamp: "2025-11-09T10:48:56.840811",
     },
     {
-        id: 2,               // ← اضافه شد
+        id: 2,
         nbImsi: 2,
         tmsi1: "0x371f3c04",
         tmsi2: "0x56469519",
@@ -69,7 +69,7 @@ export const terminalRows = [
         timestamp: "2025-11-09T10:49:04.682151",
     },
     {
-        id: 3,               // ← اضافه شد
+        id: 3,
         nbImsi: 3,
         tmsi1: "0xdb5cea51",
         tmsi2: "0x09043ab9",
@@ -92,7 +92,7 @@ export default function TestPage() {
 
 
     return (
-        <div style={{width:"100%", height: "500px", padding: "20px" }}>
+        <div style={{width:"100%", height: "100%", padding: "5px" }}>
             <CustomDataGrid
                 columns={terminalColumns}
                 rows={terminalRows}

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useState} from "react";
 import {
     AppBar,
     Box,
@@ -13,42 +13,43 @@ import {
     useMediaQuery,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
-import { Home, ListAlt, PersonPin } from "@mui/icons-material";
-import { useNavigate } from "react-router-dom";
-import { useError } from "../base/context/ErrorContext";
-import { setupAxiosInterceptors } from "../base/axios/axios.config";
-import { useTheme } from "@mui/material/styles";
+import {Home, ListAlt, PersonPin} from "@mui/icons-material";
+import {useNavigate} from "react-router-dom";
+import {useError} from "../base/context/ErrorContext";
+import {setupAxiosInterceptors} from "../base/axios/axios.config";
+import {useTheme} from "@mui/material/styles";
+import {DarkMode, LightMode} from "@mui/icons-material";
 
 const drawerWidth = 210;
 
-const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+const MainLayout: React.FC<{ children: React.ReactNode }> = ({children}) => {
     const navigate = useNavigate();
-    const { showError } = useError();
+    const {showError} = useError();
     const theme = useTheme();
-    const isMobile = useMediaQuery(theme.breakpoints.down("md")); // ⬅ ریسپانسیو
+    const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
-    const [openMobile, setOpenMobile] = useState(false);
+    const [drawerOpen, setDrawerOpen] = useState(false);
 
     useEffect(() => {
         setupAxiosInterceptors(showError);
     }, [showError]);
 
     const menuItems = [
-        { text: "داشبورد", icon: <Home />, path: "/" },
-        { text: "لیست استعلامات", icon: <ListAlt />, path: "/inquiry" },
-        { text: "استعلام Sherlock", icon: <PersonPin />, path: "/sherlock" },
-        { text: "دمو", icon: <Home />, path: "/demo" },
+        {text: "داشبورد", icon: <Home/>, path: "/"},
+        {text: "لیست استعلامات", icon: <ListAlt/>, path: "/inquiry"},
+        {text: "استعلام Sherlock", icon: <PersonPin/>, path: "/sherlock"},
+        {text: "دمو", icon: <Home/>, path: "/demo"},
     ];
 
     const drawerContent = (
-        <Box sx={{ textAlign: "right", mt: 2 }}>
+        <Box sx={{textAlign: "right", mt: 2}}>
             <List>
                 {menuItems.map((item, index) => (
                     <ListItemButton
                         key={index}
                         onClick={() => {
                             navigate(item.path);
-                            if (isMobile) setOpenMobile(false);
+                            setDrawerOpen(false);
                         }}
                         sx={{
                             justifyContent: "space-between",
@@ -63,22 +64,24 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                             },
                         }}
                     >
-                        <ListItemText primary={item.text} sx={{ ".MuiTypography-root": { fontSize: "0.9rem" } }} />
-                        <ListItemIcon sx={{ minWidth: "unset", color: "#90caf9", ml: 1 }}>
+                        <ListItemText primary={item.text}
+                                      sx={{".MuiTypography-root": {fontSize: "0.9rem"}}}/>
+                        <ListItemIcon sx={{minWidth: "unset", color: "#90caf9", ml: 1}}>
                             {item.icon}
                         </ListItemIcon>
                     </ListItemButton>
                 ))}
+
             </List>
 
-            <Box sx={{ textAlign: "center", pb: 2, fontSize: "0.8rem", opacity: 0.6 }}>
+            <Box sx={{textAlign: "center", pb: 2, fontSize: "0.8rem", opacity: 0.6}}>
                 نسخه 1.0.0
             </Box>
         </Box>
     );
 
     return (
-        <Box sx={{ display: "flex", height: "100vh", overflow: "hidden", direction: "rtl" }}>
+        <Box sx={{display: "flex", height: "100vh", overflow: "hidden", direction: "rtl"}}>
             {/* هدر بالا */}
             <AppBar
                 position="fixed"
@@ -89,65 +92,60 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                     borderBottom: "1px solid rgba(255,255,255,0.1)",
                 }}
             >
-                <Toolbar sx={{ justifyContent: "space-between" }}>
-                    {/* دکمه منوی موبایل */}
-                    {isMobile && (
-                        <IconButton onClick={() => setOpenMobile(prev => !prev)} sx={{ color: "#fff" }}>
-                            <MenuIcon />
-                        </IconButton>
-                    )}
+                <Toolbar sx={{justifyContent: "space-between"}}>
 
-                    <Typography variant="h6" sx={{ color: "#e3f2fd", mx: "auto" }}>
+                    {/* دکمه منو */}
+                    <IconButton onClick={() => setDrawerOpen(!drawerOpen)} sx={{color: "#fff"}}>
+                        <MenuIcon/>
+                    </IconButton>
+
+                    {/* عنوان */}
+                    <Typography variant="h6" sx={{color: "#e3f2fd", mx: "auto"}}>
                         سامانه مدیریت استعلامات
                     </Typography>
 
-                    <Box width={40} /> {/* جهت تراز وسط */}
+                    {/* دکمه تاگل تم */}
+                    <IconButton
+                        sx={{
+                            color: "#fff",
+                            ml: 1,
+                            background: "rgba(255,255,255,0.12)",
+                            backdropFilter: "blur(8px)",
+                            borderRadius: "12px",
+                            p: 1,
+                            transition: "0.3s",
+                            "&:hover": {
+                                background: "rgba(255,255,255,0.25)",
+                            },
+                        }}
+                    >
+                        <LightMode sx={{fontSize: 22}}/>
+                    </IconButton>
+
                 </Toolbar>
             </AppBar>
 
-            {/* Drawer برای دسکتاپ */}
-            {!isMobile && (
-                <Drawer
-                    variant="permanent"
-                    anchor="right"
-                    sx={{
+            {/* Drawer به صورت راست‌به‌چپ */}
+            <Drawer
+                anchor="left"
+                open={drawerOpen}
+                onClose={() => setDrawerOpen(false)}
+                sx={{
+                    [`& .MuiDrawer-paper`]: {
                         width: drawerWidth,
-                        flexShrink: 0,
-                        [`& .MuiDrawer-paper`]: {
-                            width: drawerWidth,
-                            background: "rgba(30, 30, 40, 0.6)",
-                            backdropFilter: "blur(14px)",
-                            borderLeft: "1px solid rgba(255,255,255,0.1)",
-                            color: "#e0e0e0",
-                        },
-                    }}
-                >
-                    <Toolbar />
-                    {drawerContent}
-                </Drawer>
-            )}
+                        background: "rgba(30, 30, 40, 0.85)",
+                        backdropFilter: "blur(18px)",
+                        color: "#e0e0e0",
+                        right: 0,
+                        left: "unset",
+                    },
+                }}
+            >
+                <Toolbar/>
+                {drawerContent}
+            </Drawer>
 
-            {/* Drawer برای موبایل */}
-            {isMobile && (
-                <Drawer
-                    anchor="right"
-                    open={openMobile}
-                    onClose={() => setOpenMobile(false)}
-                    sx={{
-                        [`& .MuiDrawer-paper`]: {
-                            width: drawerWidth,
-                            background: "rgba(30, 30, 40, 0.85)",
-                            backdropFilter: "blur(18px)",
-                            color: "#e0e0e0",
-                        },
-                    }}
-                >
-                    <Toolbar />
-                    {drawerContent}
-                </Drawer>
-            )}
-
-            {/* محتوای اصلی */}
+            {/* محتوای صفحه */}
             <Box
                 component="main"
                 sx={{

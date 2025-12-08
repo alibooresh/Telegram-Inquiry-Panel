@@ -1,11 +1,12 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import {
     Box,
     Button,
     Card,
     CardContent,
     CardHeader,
-    Chip, CircularProgress,
+    Chip,
+    CircularProgress,
     FormControl,
     InputLabel,
     MenuItem,
@@ -13,32 +14,27 @@ import {
     Select,
     TextField,
     Typography,
+    useTheme,
 } from "@mui/material";
-import {useNavigate} from "react-router-dom";
 import api from "../../../base/axios/axios.config";
+import { useNavigate } from "react-router-dom";
 
 interface UserSitesRequest {
     username: string;
     sites: string[];
 }
 
-const siteOptions = ["twitter", "github", "instagram", "facebook", "tiktok"];
-
 const SherlockForm = () => {
+    const theme = useTheme();
+    const navigate = useNavigate();
+
     const [username, setUsername] = useState("");
     const [sites, setSites] = useState<string[]>([]);
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState<string | null>(null);
-    const [result, setResult] = useState<string | null>(null);
-    const navigate = useNavigate();
     const [siteOptions, setSiteOptions] = useState<string[]>([]);
     const [loadingSites, setLoadingSites] = useState(false);
 
-    interface SherlockResponse {
-        results: string[];
-        sites_requested: string[];
-        username: string;
-    }
     interface ScanResponse {
         message: string;
         scan_id: number;
@@ -64,12 +60,11 @@ const SherlockForm = () => {
             const response = await api.post("/scan", requestData);
             const data = response.data;
 
-            // فقط همین داده‌ها رو نگه داریم
             setResultData({
                 scan_id: data.scan_id,
                 username: data.username,
                 sites: data.sites,
-                message: data.message
+                message: data.message,
             });
         } catch (error) {
             console.error(error);
@@ -84,7 +79,7 @@ const SherlockForm = () => {
             try {
                 setLoadingSites(true);
                 const response = await api.get<{ sites: string[] }>("/sites/list");
-                if (response.status===200 && response.data.sites){
+                if (response.status === 200 && response.data.sites) {
                     setSiteOptions(response.data.sites);
                 }
             } catch (error) {
@@ -93,6 +88,7 @@ const SherlockForm = () => {
                 setLoadingSites(false);
             }
         };
+
         fetchSites();
     }, []);
 
@@ -106,7 +102,10 @@ const SherlockForm = () => {
                         left: 0,
                         width: "100vw",
                         height: "100vh",
-                        backgroundColor: "rgba(30,30,40,0.6)",
+                        backgroundColor:
+                            theme.palette.mode === "dark"
+                                ? "rgba(0,0,0,0.6)"
+                                : "rgba(255,255,255,0.6)",
                         backdropFilter: "blur(6px)",
                         display: "flex",
                         alignItems: "center",
@@ -114,15 +113,7 @@ const SherlockForm = () => {
                         zIndex: 2000,
                     }}
                 >
-                    <CircularProgress
-                        size={80}
-                        thickness={4}
-                        sx={{
-                            color: "rgba(144,202,249,0.8)",
-                            borderRadius: "50%",
-                            boxShadow: "0 0 20px rgba(144,202,249,0.5)",
-                        }}
-                    />
+                    <CircularProgress size={80} thickness={4} />
                 </Box>
             )}
 
@@ -130,101 +121,56 @@ const SherlockForm = () => {
                 sx={{
                     width: "100%",
                     borderRadius: 3,
-                    boxShadow: "0 8px 32px rgba(0,0,0,0.37)",
-                    backdropFilter: "blur(14px)",
-                    background: "rgba(30,30,40,0.6)",
-                    border: "1px solid rgba(255,255,255,0.1)",
-                    color: "#e3f2fd",
+                    boxShadow: theme.palette.mode === "dark"
+                        ? "0 8px 32px rgba(0,0,0,0.5)"
+                        : "0 4px 16px rgba(0,0,0,0.1)",
+                    backdropFilter: theme.palette.mode === "dark" ? "blur(14px)" : "none",
+                    background:
+                        theme.palette.mode === "dark"
+                            ? "rgba(40,40,55,0.6)"
+                            : theme.palette.background.paper,
+                    border:
+                        theme.palette.mode === "dark"
+                            ? "1px solid rgba(255,255,255,0.1)"
+                            : "1px solid rgba(0,0,0,0.05)",
+                    color: theme.palette.text.primary,
                 }}
             >
                 <CardHeader
                     title={
-                        <Typography variant="h5" align="right" fontWeight="bold" gutterBottom>
+                        <Typography variant="h5" align="right" fontWeight="bold">
                             استعلام نام کاربری
                         </Typography>
                     }
                 />
                 <CardContent>
-                    {/* فیلد نام کاربری */}
+                    {/* نام کاربری */}
                     <TextField
-                        type="text"
-                        color="success"
-                        fullWidth
                         label="نام کاربری"
-                        variant="outlined"
+                        fullWidth
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
                         sx={{
                             maxWidth: 350,
-                            mb: 2,
-                            ml: 2,
-                            "& .MuiOutlinedInput-root": {
-                                backgroundColor: "rgba(255,255,255,0.05)",
-                                borderRadius: "8px",
-                                "& fieldset": {
-                                    borderColor: "rgba(144,202,249,0.5)",
-                                },
-                                "&:hover fieldset": {
-                                    borderColor: "rgba(144,202,249,0.9)",
-                                },
-                                "&.Mui-focused fieldset": {
-                                    borderColor: "#90caf9",
-                                    borderWidth: "2px",
-                                },
-                            },
-                            "& .MuiInputLabel-root": { color: "#90caf9" },
-                            "& .MuiInputLabel-root.Mui-focused": { color: "#bbdefb" },
-                            "& input": { color: "#fff" },
+                            mb: 3,
                         }}
                     />
 
-                    {/* فیلد انتخاب سایت‌ها */}
-                    <FormControl fullWidth sx={{maxWidth: 350, mb: 4}}>
-                        <InputLabel sx={{color: "#90caf9"}}>سایت‌ها</InputLabel>
+                    {/* انتخاب سایت‌ها */}
+                    <FormControl fullWidth sx={{ maxWidth: 350, mb: 4 }}>
+                        <InputLabel>سایت‌ها</InputLabel>
                         <Select
                             multiple
                             value={sites}
                             onChange={(e) => setSites(e.target.value as string[])}
-                            input={<OutlinedInput label="سایت‌ها"/>}
+                            input={<OutlinedInput label="سایت‌ها" />}
                             renderValue={(selected) => (
-                                <Box sx={{display: "flex", flexWrap: "wrap", gap: 0.5}}>
-                                    {(selected as string[]).map((value) => (
-                                        <Chip key={value} label={value} color="primary"/>
+                                <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
+                                    {selected.map((value) => (
+                                        <Chip key={value} label={value} color="primary" />
                                     ))}
                                 </Box>
                             )}
-                            MenuProps={{
-                                PaperProps: {
-                                    sx: {
-                                        backgroundColor: "rgba(25, 25, 25, 0.9)",
-                                        color: "#fff",
-                                        backdropFilter: "blur(6px)",
-                                        "& .MuiMenuItem-root:hover": {
-                                            backgroundColor: "rgba(255,255,255,0.1)",
-                                        },
-                                        "& .Mui-selected": {
-                                            backgroundColor: "rgba(255,255,255,0.15) !important",
-                                        },
-                                    },
-                                },
-                            }}
-                            sx={{
-                                color: "#fff",
-                                "& .MuiOutlinedInput-root": {
-                                    backgroundColor: "rgba(255,255,255,0.05)",
-                                    borderRadius: "8px",
-                                },
-                                "& .MuiOutlinedInput-notchedOutline": {
-                                    borderColor: "rgba(144,202,249,0.5)",
-                                },
-                                "&:hover .MuiOutlinedInput-notchedOutline": {
-                                    borderColor: "rgba(144,202,249,0.9)",
-                                },
-                                "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                                    borderColor: "#90caf9",
-                                    borderWidth: "2px",
-                                },
-                            }}
                         >
                             {siteOptions.map((site) => (
                                 <MenuItem key={site} value={site}>
@@ -232,61 +178,48 @@ const SherlockForm = () => {
                                 </MenuItem>
                             ))}
                         </Select>
-
                     </FormControl>
 
-                    {/* دکمه استعلام */}
+                    {/* دکمه */}
                     <Button
                         variant="contained"
                         color="primary"
                         onClick={handleSherlock}
-                        disabled={loading || !username || sites.length === 0}
-                        sx={{
-                            height: 56,
-                            marginRight: 2,
-                            "&.Mui-disabled": {
-                                backgroundColor: "rgba(144,202,249,0.3) !important",
-                                color: "rgba(255,255,255,0.7) !important",
-                                opacity: 1,
-                            },
-                        }}
+                        disabled={loading}
+                        sx={{ height: 56, mr: 2 }}
                     >
-                        {loading ? "در حال استعلام..." : "استعلام"}
+                        استعلام
                     </Button>
 
-
-                    {/* پیام‌ها */}
+                    {/* پیام */}
                     {message && (
-                        <Typography variant="body2" color="error" mt={2}>
+                        <Typography color="error" mt={2}>
                             {message}
                         </Typography>
                     )}
 
+                    {/* نتیجه */}
                     {resultData && (
                         <Box
                             mt={3}
                             p={2}
                             sx={{
-                                background: "rgba(255,255,255,0.05)",
+                                background:
+                                    theme.palette.mode === "dark"
+                                        ? "rgba(255,255,255,0.05)"
+                                        : "rgba(0,0,0,0.04)",
                                 borderRadius: 2,
                                 textAlign: "center",
                             }}
                         >
-                            <Typography variant="body1" fontWeight="bold" mb={1}>
-                                ✅ {resultData.message}
+                            <Typography fontWeight="bold" mb={1}>
+                                {resultData.message}
                             </Typography>
-                            <Typography variant="body2">
-                                شناسه استعلام: <strong>{resultData.scan_id}</strong>
-                            </Typography>
-                            <Typography variant="body2">
-                                کاربر: <strong>{resultData.username}</strong>
-                            </Typography>
-                            <Typography variant="body2">
-                                سایت‌ها: {resultData.sites.join(", ")}
-                            </Typography>
+                            <Typography>شناسه: {resultData.scan_id}</Typography>
+                            <Typography>کاربر: {resultData.username}</Typography>
+                            <Typography>سایت‌ها: {resultData.sites.join(", ")}</Typography>
                         </Box>
                     )}
-
                 </CardContent>
             </Card>
         </>

@@ -6,6 +6,7 @@ import reportWebVitals from './reportWebVitals';
 import {createTheme, CssBaseline, ThemeProvider} from "@mui/material";
 import {faIR} from "@mui/material/locale";
 import {BrowserRouter, Route, Routes} from "react-router-dom";
+import {ThemeModeProvider} from "./app/theme/ThemeContext";
 
 
 
@@ -39,10 +40,10 @@ const root = ReactDOM.createRoot(
 );
 root.render(
     <BrowserRouter>
-        <ThemeProvider theme={theme}>
             <CssBaseline />
+        <ThemeModeProvider>
             <App />
-        </ThemeProvider>
+        </ThemeModeProvider>
     </BrowserRouter>
 );
 

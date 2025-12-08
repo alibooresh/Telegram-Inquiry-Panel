@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import {
     AppBar,
     Box,
@@ -13,20 +13,22 @@ import {
     useMediaQuery,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
-import {Home, ListAlt, PersonPin} from "@mui/icons-material";
-import {useNavigate} from "react-router-dom";
-import {useError} from "../base/context/ErrorContext";
-import {setupAxiosInterceptors} from "../base/axios/axios.config";
-import {useTheme} from "@mui/material/styles";
-import {DarkMode, LightMode} from "@mui/icons-material";
+import { Home, ListAlt, PersonPin, DarkMode, LightMode } from "@mui/icons-material";
+import { useNavigate } from "react-router-dom";
+import { useError } from "../base/context/ErrorContext";
+import { setupAxiosInterceptors } from "../base/axios/axios.config";
+import { useTheme } from "@mui/material/styles";
+import { useThemeMode } from "../app/theme/ThemeContext";
 
 const drawerWidth = 210;
 
-const MainLayout: React.FC<{ children: React.ReactNode }> = ({children}) => {
+const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const navigate = useNavigate();
-    const {showError} = useError();
+    const { showError } = useError();
     const theme = useTheme();
-    const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+    const { mode, toggleMode } = useThemeMode();
+
+    const isDark = mode === "dark";
 
     const [drawerOpen, setDrawerOpen] = useState(false);
 
@@ -35,14 +37,14 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({children}) => {
     }, [showError]);
 
     const menuItems = [
-        {text: "داشبورد", icon: <Home/>, path: "/"},
-        {text: "لیست استعلامات", icon: <ListAlt/>, path: "/inquiry"},
-        {text: "استعلام Sherlock", icon: <PersonPin/>, path: "/sherlock"},
-        {text: "دمو", icon: <Home/>, path: "/demo"},
+        { text: "داشبورد", icon: <Home />, path: "/" },
+        { text: "لیست استعلامات", icon: <ListAlt />, path: "/inquiry" },
+        { text: "استعلام Sherlock", icon: <PersonPin />, path: "/sherlock" },
+        { text: "IMSI", icon: <Home />, path: "/demo" },
     ];
 
     const drawerContent = (
-        <Box sx={{textAlign: "right", mt: 2}}>
+        <Box sx={{ textAlign: "right", mt: 2 }}>
             <List>
                 {menuItems.map((item, index) => (
                     <ListItemButton
@@ -58,74 +60,106 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({children}) => {
                             mx: 1,
                             mb: 0.5,
                             transition: "all 0.3s ease",
+
+                            // وابسته به تم
                             "&:hover": {
-                                backgroundColor: "rgba(255,255,255,0.1)",
+                                backgroundColor: isDark
+                                    ? "rgba(255,255,255,0.12)"
+                                    : "rgba(0,0,0,0.08)",
                                 transform: "translateX(-4px)",
                             },
                         }}
                     >
-                        <ListItemText primary={item.text}
-                                      sx={{".MuiTypography-root": {fontSize: "0.9rem"}}}/>
-                        <ListItemIcon sx={{minWidth: "unset", color: "#90caf9", ml: 1}}>
+                        <ListItemText
+                            primary={item.text}
+                            sx={{
+                                ".MuiTypography-root": {
+                                    fontSize: "0.9rem",
+                                    color: theme.palette.text.primary,
+                                },
+                            }}
+                        />
+                        <ListItemIcon
+                            sx={{
+                                minWidth: "unset",
+                                color: theme.palette.primary.main,
+                                ml: 1,
+                            }}
+                        >
                             {item.icon}
                         </ListItemIcon>
                     </ListItemButton>
                 ))}
-
             </List>
 
-            <Box sx={{textAlign: "center", pb: 2, fontSize: "0.8rem", opacity: 0.6}}>
+            <Box
+                sx={{
+                    textAlign: "center",
+                    pb: 2,
+                    fontSize: "0.8rem",
+                    opacity: 0.6,
+                    color: theme.palette.text.secondary,
+                }}
+            >
                 نسخه 1.0.0
             </Box>
         </Box>
     );
 
     return (
-        <Box sx={{display: "flex", height: "100vh", overflow: "hidden", direction: "rtl"}}>
-            {/* هدر بالا */}
+        <Box sx={{ display: "flex", height: "100vh", overflow: "hidden", direction: "rtl" }}>
+
+            {/* ⭐ AppBar داینامیک */}
             <AppBar
                 position="fixed"
                 sx={{
-                    zIndex: (theme) => theme.zIndex.drawer + 1,
-                    background: "rgba(20, 20, 30, 0.7)",
+                    zIndex: (t) => t.zIndex.drawer + 1,
+                    background: isDark
+                        ? "rgba(20,20,30,0.7)"
+                        : "rgba(255,255,255,0.7)",
                     backdropFilter: "blur(10px)",
-                    borderBottom: "1px solid rgba(255,255,255,0.1)",
+                    borderBottom: `1px solid ${
+                        isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"
+                    }`,
+                    color: theme.palette.text.primary,
                 }}
             >
-                <Toolbar sx={{justifyContent: "space-between"}}>
-
-                    {/* دکمه منو */}
-                    <IconButton onClick={() => setDrawerOpen(!drawerOpen)} sx={{color: "#fff"}}>
-                        <MenuIcon/>
+                <Toolbar sx={{ justifyContent: "space-between" }}>
+                    {/* menu */}
+                    <IconButton onClick={() => setDrawerOpen(!drawerOpen)} sx={{ color: theme.palette.text.primary }}>
+                        <MenuIcon />
                     </IconButton>
 
-                    {/* عنوان */}
-                    <Typography variant="h6" sx={{color: "#e3f2fd", mx: "auto"}}>
+                    <Typography variant="h6" sx={{ mx: "auto", color: theme.palette.text.primary }}>
                         سامانه مدیریت استعلامات
                     </Typography>
 
-                    {/* دکمه تاگل تم */}
+                    {/* دکمه تغییر تم */}
                     <IconButton
+                        onClick={toggleMode}
                         sx={{
-                            color: "#fff",
+                            color: theme.palette.text.primary,
                             ml: 1,
-                            background: "rgba(255,255,255,0.12)",
+                            background: isDark
+                                ? "rgba(255,255,255,0.12)"
+                                : "rgba(0,0,0,0.08)",
                             backdropFilter: "blur(8px)",
                             borderRadius: "12px",
                             p: 1,
                             transition: "0.3s",
                             "&:hover": {
-                                background: "rgba(255,255,255,0.25)",
+                                background: isDark
+                                    ? "rgba(255,255,255,0.2)"
+                                    : "rgba(0,0,0,0.15)",
                             },
                         }}
                     >
-                        <LightMode sx={{fontSize: 22}}/>
+                        {isDark ? <LightMode /> : <DarkMode />}
                     </IconButton>
-
                 </Toolbar>
             </AppBar>
 
-            {/* Drawer به صورت راست‌به‌چپ */}
+            {/* Drawer */}
             <Drawer
                 anchor="left"
                 open={drawerOpen}
@@ -133,32 +167,34 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({children}) => {
                 sx={{
                     [`& .MuiDrawer-paper`]: {
                         width: drawerWidth,
-                        background: "rgba(30, 30, 40, 0.85)",
+                        background: isDark ? "rgba(30,30,40,0.9)" : "rgba(255,255,255,0.9)",
                         backdropFilter: "blur(18px)",
-                        color: "#e0e0e0",
+                        color: theme.palette.text.primary,
                         right: 0,
                         left: "unset",
                     },
                 }}
             >
-                <Toolbar/>
+                <Toolbar />
                 {drawerContent}
             </Drawer>
 
-            {/* محتوای صفحه */}
+            {/* محتوای صفحه - داینامیک */}
             <Box
                 component="main"
                 sx={{
                     flexGrow: 1,
-                    bgcolor: "rgba(15, 15, 25, 0.8)",
-                    color: "#e3f2fd",
                     p: 3,
                     pt: 10,
                     pr: 3,
                     height: "100vh",
                     overflowY: "auto",
-                    backgroundImage:
-                        "radial-gradient(circle at 20% 30%, rgba(70,70,120,0.3) 0%, transparent 70%), radial-gradient(circle at 80% 70%, rgba(30,50,90,0.2) 0%, transparent 70%)",
+                    bgcolor: theme.palette.background.default,
+                    color: theme.palette.text.primary,
+
+                    backgroundImage: isDark
+                        ? "radial-gradient(circle at 20% 30%, rgba(70,70,120,0.3) 0%, transparent 70%), radial-gradient(circle at 80% 70%, rgba(30,50,90,0.2) 0%, transparent 70%)"
+                        : "radial-gradient(circle at 20% 30%, rgba(200,200,255,0.2) 0%, transparent 70%), radial-gradient(circle at 80% 70%, rgba(150,170,255,0.15) 0%, transparent 70%)",
                 }}
             >
                 {children}

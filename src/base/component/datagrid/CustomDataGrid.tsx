@@ -54,8 +54,8 @@ function CustomDataGrid<T extends { id: string | number }>({
                     },
                 })
                 .then((res) => {
-                    setData(res.data.content);
-                    setRowCount(res.data.totalElements);
+                    setData(res.data.data);
+                    setRowCount(res.data.total);
                 })
                 .finally(() => setLoading(false));
         } else if (rows) {
@@ -122,6 +122,7 @@ function CustomDataGrid<T extends { id: string | number }>({
                     rows={data}
                     columns={finalColumns}
                     pagination
+                    getRowId={(row) => row.imsi}
                     paginationMode={requestConfig ? "server" : "client"}
                     rowCount={rowCount}
                     paginationModel={{ page, pageSize: pageSizeState }}
@@ -131,13 +132,80 @@ function CustomDataGrid<T extends { id: string | number }>({
                     }}
                     pageSizeOptions={[5, 10, 20]}
                     localeText={{
+                        // پیام‌های بدون داده
                         noRowsLabel: "هیچ داده‌ای برای نمایش وجود ندارد",
+                        noResultsOverlayLabel: "هیچ نتیجه‌ای پیدا نشد",
+
+                        // فوتر
                         footerRowSelected: (count) =>
-                            count !== 1
-                                ? `${count.toLocaleString()} ردیف انتخاب شده`
-                                : `${count.toLocaleString()} ردیف انتخاب شده`,
+                            `${count.toLocaleString()} ردیف انتخاب شده`,
                         footerTotalRows: "تعداد کل ردیف‌ها:",
-                        paginationRowsPerPage: "ردیف در هر صفحه",
+
+                        // فیلترها
+                        filterPanelAddFilter: "افزودن فیلتر",
+                        filterPanelDeleteIconLabel: "حذف",
+                        filterPanelOperatorAnd: "و",
+                        filterPanelOperatorOr: "یا",
+                        filterPanelColumns: "ستون‌ها",
+                        filterPanelInputLabel: "مقدار",
+                        filterPanelInputPlaceholder: "مقدار فیلتر",
+
+                        // نوع فیلتر
+                        filterOperatorContains: "شامل باشد",
+                        filterOperatorEquals: "برابر باشد",
+                        filterOperatorStartsWith: "شروع شود با",
+                        filterOperatorEndsWith: "تمام شود با",
+                        filterOperatorIs: "باشد",
+                        filterOperatorNot: "نباشد",
+                        filterOperatorAfter: "بعد از",
+                        filterOperatorOnOrAfter: "در یا بعد از",
+                        filterOperatorBefore: "قبل از",
+                        filterOperatorOnOrBefore: "در یا قبل از",
+                        filterOperatorIsEmpty: "خالی باشد",
+                        filterOperatorIsNotEmpty: "خالی نباشد",
+                        filterOperatorIsAnyOf: "هرکدام از",
+
+                        // ستون‌ها
+                        columnHeaderFiltersLabel: "نمایش فیلترها",
+                        columnHeaderSortIconLabel: "مرتب‌سازی",
+                        columnMenuLabel: "منو",
+                        columnMenuShowColumns: "نمایش ستون‌ها",
+                        columnMenuFilter: "فیلتر",
+                        columnMenuHideColumn: "مخفی کردن ستون",
+                        columnMenuUnsort: "لغو مرتب‌سازی",
+                        columnMenuSortAsc: "مرتب‌سازی صعودی",
+                        columnMenuSortDesc: "مرتب‌سازی نزولی",
+
+                        // انتخاب
+                        checkboxSelectionHeaderName: "انتخاب",
+                        booleanCellTrueLabel: "بله",
+                        booleanCellFalseLabel: "خیر",
+
+                        // ابزارها
+                        toolbarColumns: "ستون‌ها",
+                        toolbarFilters: "فیلترها",
+                        toolbarDensity: "تراکم",
+                        toolbarDensityCompact: "فشرده",
+                        toolbarDensityStandard: "استاندارد",
+                        toolbarDensityComfortable: "راحت",
+                        toolbarExport: "خروجی",
+                        toolbarExportCSV: "خروجی CSV",
+                        toolbarExportPrint: "چاپ",
+
+                        // صفحه‌بندی
+                        paginationRowsPerPage: "ردیف در هر صفحه:",
+
+
+
+                        // Tree data
+                        treeDataGroupingHeaderName: "گروه‌بندی",
+                        treeDataExpand: "باز کردن",
+                        treeDataCollapse: "بستن",
+
+                        // گروه‌بندی
+                        groupingColumnHeaderName: "گروه‌بندی",
+                        groupColumn: (name) => `گروه‌بندی بر اساس ${name}`,
+
                     }}
                     sx={{
                         "& .MuiDataGrid-root": {

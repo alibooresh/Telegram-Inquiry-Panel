@@ -43,26 +43,45 @@ function CustomDataGrid<T extends { id: string | number }>({
     const [rowCount, setRowCount] = useState(0);
 
     useEffect(() => {
+        let interval: NodeJS.Timer;
+
+        const fetchData = () => {
+            if (requestConfig) {
+                setLoading(true);
+                api
+                    .get(requestConfig.url!, {
+                        params: {
+                            ...requestConfig.params,
+                            page,
+                            size: pageSizeState,
+                        },
+                    })
+                    .then((res) => {
+                        const rowsWithId = res.data.data.map((row: any) => ({
+                            ...row,
+                            id: row.imsi,
+                        }));
+                        setData(rowsWithId);
+                        setRowCount(res.data.total);
+                    })
+                    .finally(() => setLoading(false));
+            } else if (rows) {
+                setRowCount(rows.length);
+                setData(rows.slice(page * pageSizeState, (page + 1) * pageSizeState));
+            }
+        };
+
+        fetchData();
+
         if (requestConfig) {
-            setLoading(true);
-            api
-                .get(requestConfig.url!, {
-                    params: {
-                        ...requestConfig.params,
-                        page: page,
-                        size: pageSizeState,
-                    },
-                })
-                .then((res) => {
-                    setData(res.data.data);
-                    setRowCount(res.data.total);
-                })
-                .finally(() => setLoading(false));
-        } else if (rows) {
-            setRowCount(rows.length);
-            setData(rows.slice(page * pageSizeState, (page + 1) * pageSizeState));
+            interval = setInterval(fetchData, (5000 * 2));
         }
+
+        return () => {
+            if (interval) clearInterval(interval);
+        };
     }, [page, rows, requestConfig, pageSizeState]);
+
 
     // وسط‌چین کردن تمام ستون‌ها و اضافه کردن ستون عملیات
     const finalColumns: GridColDef[] = columns.map(col => ({

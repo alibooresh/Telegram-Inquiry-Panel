@@ -19,7 +19,7 @@ import { useError } from "../base/context/ErrorContext";
 import { setupAxiosInterceptors } from "../base/axios/axios.config";
 import { useTheme } from "@mui/material/styles";
 import { useThemeMode } from "../app/theme/ThemeContext";
-
+import TerminalIcon from '@mui/icons-material/Terminal';
 const drawerWidth = 210;
 
 const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -38,7 +38,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
     const menuItems = [
         { text: "داشبورد", icon: <Home />, path: "/" },
-        { text: "لیست استعلامات", icon: <ListAlt />, path: "/inquiry" },
+        { text: "اسکریپت", icon: <TerminalIcon />, path: "/script" },
         { text: "استعلام Sherlock", icon: <PersonPin />, path: "/sherlock" },
         { text: "IMSI", icon: <Home />, path: "/demo" },
     ];
@@ -130,9 +130,18 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                         <MenuIcon />
                     </IconButton>
 
-                    <Typography variant="h6" sx={{ mx: "auto", color: theme.palette.text.primary }}>
-                        سامانه مدیریت استعلامات
-                    </Typography>
+                    <Box sx={{ display: "flex", alignItems: "center", mx: "auto" }}>
+
+                        <Box
+                            component="img"
+                            src='tower.png' // مسیر عکس خودت
+                            alt="Logo"
+                            sx={{ width: 32, height: 32, borderRadius: "50%" }}
+                        />
+                        <Typography variant="h6" sx={{ color: theme.palette.text.primary, mr: 1 }}>
+                            IMSI Control Center
+                        </Typography>
+                    </Box>
 
                     {/* دکمه تغییر تم */}
                     <IconButton
@@ -191,10 +200,10 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                     overflowY: "auto",
                     bgcolor: theme.palette.background.default,
                     color: theme.palette.text.primary,
-
+                    position:'relative',
                     backgroundImage: isDark
                         ? "radial-gradient(circle at 20% 30%, rgba(70,70,120,0.3) 0%, transparent 70%), radial-gradient(circle at 80% 70%, rgba(30,50,90,0.2) 0%, transparent 70%)"
-                        : "radial-gradient(circle at 20% 30%, rgba(200,200,255,0.2) 0%, transparent 70%), radial-gradient(circle at 80% 70%, rgba(150,170,255,0.15) 0%, transparent 70%)",
+                        : "linear-gradient(135deg, #ebf4f5 30%, #b5c6e0 70%)",
                 }}
             >
                 {children}

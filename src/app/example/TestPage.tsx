@@ -8,9 +8,20 @@ export const terminalColumns: GridColDef[] = [
     {field: "lac", headerName: "LAC", width: 100, headerAlign: "center", align: "center"},
     {field: "mnc", headerName: "MNC", width: 80, headerAlign: "center", align: "center"},
     {field: "mcc", headerName: "MCC", width: 80, headerAlign: "center", align: "center"},
-    {field: "operator", headerName: "پراتور", width: 250, headerAlign: "center", align: "center"},
-    {field: "brand", headerName: "برند", width: 150, headerAlign: "center", align: "center"},
-    {field: "country", headerName: "کشور", width: 100, headerAlign: "center", align: "center"},
+    {field: "operator", headerName: "اپراتور", width: 250, headerAlign: "center", align: "center",
+        renderCell: (params) => {
+            return params.value === 'MTN Irancell Telecommunications Services Company' ?
+                "شرکت خدمات مخابراتی ام‌تی‌ان ایرانسل" : params.value;
+        }},
+    {field: "brand", headerName: "برند", width: 150, headerAlign: "center", align: "center",
+        renderCell: (params) => {
+            return params.value === 'MTN Irancell' ? "ایرانسل" : params.value;
+        }},
+    {field: "country", headerName: "کشور", width: 100, headerAlign: "center", align: "center",
+        renderCell: (params) => {
+            return params.value === 'Iran' ? "ایران" : params.value;
+        }
+    },
     {field: "tmsi2", headerName: "TMSI-2", width: 120, headerAlign: "center", align: "center"},
     {field: "tmsi1", headerName: "TMSI-1", width: 120, headerAlign: "center", align: "center"},
     {
@@ -21,28 +32,28 @@ export const terminalColumns: GridColDef[] = [
     </span>
         ),
     },
-    {field: "last_seen", headerName: "زمان", width: 180, headerAlign: "center", align: "center"},
-    {
-        field: "actions",
-        headerName: "عملیات",
-        width: 100,
-        headerAlign: "center",
-        sortable: false,
-        filterable: false,
-        renderCell: (params) => (
-            <button
-                style={{
-                    background: "none",
-                    border: "none",
-                    cursor: "pointer",
-                    color: "#117fd0"
-                }}
-                onClick={() => alert(`Viewing record ${params.row.imsi}`)}
-            >
-                مشاهده
-            </button>
-        ),
-    },
+    {field: "last_seen", headerName: "زمان", width: 220, headerAlign: "center", align: "center"},
+    // {
+    //     field: "actions",
+    //     headerName: "عملیات",
+    //     width: 100,
+    //     headerAlign: "center",
+    //     sortable: false,
+    //     filterable: false,
+    //     renderCell: (params) => (
+    //         <button
+    //             style={{
+    //                 background: "none",
+    //                 border: "none",
+    //                 cursor: "pointer",
+    //                 color: "#117fd0"
+    //             }}
+    //             onClick={() => alert(`Viewing record ${params.row.imsi}`)}
+    //         >
+    //             مشاهده
+    //         </button>
+    //     ),
+    // },
 ];
 
 

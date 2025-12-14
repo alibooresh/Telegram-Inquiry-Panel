@@ -12,6 +12,7 @@ import {ErrorProvider} from './base/context/ErrorContext';
 import NewInquiryDetailForm from "./app/inquirydetail/form/NewInquiryDetailForm";
 import SherlockForm from "./app/sherlock/form/SherlockForm";
 import TestPage from "./app/example/TestPage";
+import ImsiScriptsPage from "./app/script/form/ImsiScriptsPage";
 
 
 function App() {
@@ -29,6 +30,7 @@ function App() {
                             <Route path="/inquiryDetail/new" element={<NewInquiryDetailForm/>}/>
                             <Route path="/sherlock" element={<SherlockForm/>}/>
                             <Route path="/demo" element={<TestPage/>}/>
+                            <Route path="/script" element={<ImsiScriptsPage/>}/>
                         </Routes>
                     </Suspense>
                 </MainLayout>

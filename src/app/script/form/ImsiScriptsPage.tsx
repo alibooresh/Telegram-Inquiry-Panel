@@ -1,182 +1,194 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
     Box,
     Card,
     CardContent,
     Typography,
     Button,
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogActions,
     TextField,
+    Stack,
+    Collapse,
+    Divider,
 } from "@mui/material";
-import Grid from "@mui/material/GridLegacy";
-import api from "../../../base/axios/axios.config";
-import PlayCircleIcon from "@mui/icons-material/PlayCircle";
 import TerminalIcon from "@mui/icons-material/Terminal";
+import PlayCircleIcon from "@mui/icons-material/PlayCircle";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import api from "../../../base/axios/axios.config";
 
-const SCRIPT_TYPES = ["imsi", "imsi2", "imsi3", "imsi4"];
+export default function RunScriptForm() {
+    const [showAdvanced, setShowAdvanced] = useState(false);
 
-export default function ImsiScriptsPage() {
-    const [open, setOpen] = useState(false);
-    const [scriptType, setScriptType] = useState<string | null>(null);
+    const [form, setForm] = useState({
+        scriptFile: "imsi1.py",
+        workDir: "/usr/src/imsi1",
+        password: "",
 
-    const [filePath, setFilePath] = useState("");
-    const [workDir, setWorkDir] = useState("/usr/src/IMSI-catcher");
-    const [password, setPassword] = useState("");
+        scriptId: "imsi1",
+        sqliteFile: "imsi1.sqlite",
+        args: "--sniff",
+    });
 
-    const handleOpen = (type: string) => {
-        setScriptType(type);
-        setOpen(true);
-    };
+    const [manualOverride, setManualOverride] = useState({
+        scriptId: false,
+        sqliteFile: false,
+    });
 
-    const handleClose = () => {
-        setOpen(false);
-        setFilePath("");
-        setWorkDir("/usr/src/IMSI-catcher");
-        setPassword("");
-        setScriptType(null);
-    };
+    /* 🔁 اتوماتیک کردن مقادیر وابسته */
+    useEffect(() => {
+        const baseName = form.scriptFile.split(".")[0];
 
-    const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            setFilePath(file.name);
-        }
+        setForm((prev) => ({
+            ...prev,
+            scriptId: manualOverride.scriptId ? prev.scriptId : baseName,
+            sqliteFile: manualOverride.sqliteFile
+                ? prev.sqliteFile
+                : `${baseName}.sqlite`,
+        }));
+    }, [form.scriptFile]);
+
+    const handleChange = (field: string, value: string) => {
+        setForm((prev) => ({ ...prev, [field]: value }));
     };
 
     const handleSubmit = async () => {
-        if (!scriptType || !filePath || !workDir || !password) {
-            alert("لطفاً تمام فیلدها را پر کنید");
+        if (!form.scriptFile || !form.workDir || !form.password) {
+            alert("فیلدهای اصلی را پر کنید");
             return;
         }
 
         const payload = {
-            scriptType,
-            filePath,
-            workDir,
-            password,
+            scriptId: form.scriptId,
+            scriptFile: form.scriptFile,
+            workDir: form.workDir,
+            sqliteFile: form.sqliteFile,
+            args: form.args.split(" ").filter(Boolean),
+            password: form.password,
         };
 
-        console.log("SEND TO SERVER =>", payload);
+        console.log("SEND =>", payload);
 
         try {
-            await api.post("/run/script", payload);
+            await api.post("/scripts/run", payload);
             alert("اسکریپت با موفقیت اجرا شد ✅");
-            handleClose();
-        } catch (error) {
+        } catch {
             alert("خطا در اجرای اسکریپت ❌");
         }
     };
 
     return (
-        <Box p={4}>
-            {/* Header */}
-            <Box display="flex" alignItems="center" mb={3} gap={1}>
-                <TerminalIcon fontSize="large" color="primary" />
-                <Typography variant="h5" fontWeight="bold">
-                    اجرای اسکریپت‌های IMSI
-                </Typography>
-            </Box>
-
-            {/* Cards */}
-            <Grid container spacing={2} justifyContent="center">
-                {SCRIPT_TYPES.map((type) => (
-                    <Grid
-                        item
-                        xs={12}
-                        sm={6}
-                        md={2.5}
-                        lg={2}
-                        key={type}
-                    >
-                        <Card
-                            sx={{
-                                backdropFilter: "blur(10px)",
-                                backgroundColor: "rgba(255,255,255,0.1)", // برای لایت مود
-                                borderRadius: "12px",
-                                maxWidth: 220,
-                                mx: "auto",
-                                textAlign: "center",
-                                transition: "transform 0.3s, box-shadow 0.3s",
-                                "&:hover": {
-                                    transform: "translateY(-5px)",
-                                    boxShadow: "0 8px 20px rgba(0,0,0,0.3)"
-                                }
-                            }}
-                        >
-                            <CardContent>
-                                <Typography variant="h6" mb={2}>
-                                    {type}
-                                </Typography>
-                                <Button
-                                    endIcon={
-                                        <PlayCircleIcon
-                                            sx={{ width: 20, mr: 1 }}
-                                        />
-                                    }
-                                    variant="contained"
-                                        sx={{
-                                        background: "linear-gradient(45deg, #6a11cb, #2575fc)",
-                                        "&:hover": {
-                                            background: "linear-gradient(45deg, #2575fc, #6a11cb)"
-                                        },
-                                        mt: 2,
-                                        justifyContent: "flex-",
-                                        px: 2,
-                                    }}
-                                    onClick={() => handleOpen(type)}
-                                >
-                                    اجرا
-                                </Button>
-                            </CardContent>
-                        </Card>
-                    </Grid>
-                ))}
-            </Grid>
-
-            {/* Dialog */}
-            <Dialog open={open} onClose={handleClose} fullWidth maxWidth="xs">
-                <DialogTitle>
-                    اجرای اسکریپت <strong>{scriptType}</strong>
-                </DialogTitle>
-
-                <DialogContent>
-                    <Box display="flex" flexDirection="column" gap={2} mt={1}>
-                        <Button variant="outlined" component="label">
-                            انتخاب فایل اسکریپت
-                            <input type="file" hidden onChange={handleFileSelect} />
-                        </Button>
-
-                        <TextField
-                            label="مسیر یا نام فایل اسکریپت"
-                            value={filePath}
-                            onChange={(e) => setFilePath(e.target.value)}
-                            fullWidth
-                        />
-                        <TextField
-                            label="مسیر اجرای اسکریپت (WorkDir)"
-                            value={workDir}
-                            onChange={(e) => setWorkDir(e.target.value)}
-                            fullWidth
-                        />
-                        <TextField
-                            label="پسورد"
-                            type="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            fullWidth
-                        />
+        <Box p={0} display="flex" justifyContent="center">
+            <Card sx={{ maxWidth: 600, width: "100%", borderRadius: 3 }}>
+                <CardContent>
+                    {/* Header */}
+                    <Box display="flex" alignItems="center" gap={1} mb={1}>
+                        <TerminalIcon color="primary" />
+                        <Typography variant="subtitle1" fontWeight="bold">
+                            اجرای اسکریپت
+                        </Typography>
                     </Box>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleClose}>انصراف</Button>
-                    <Button variant="contained" color="success" onClick={handleSubmit}>
-                        ارسال
+
+                    {/* Main Fields */}
+                    <Stack spacing={2}>
+                        <TextField
+                            dir="ltr"
+                            label="Script File"
+                            value={form.scriptFile}
+                            onChange={(e) =>
+                                handleChange("scriptFile", e.target.value)
+                            }
+                            fullWidth
+                        />
+
+                        <TextField
+                            dir="ltr"
+                            label="Work Directory"
+                            value={form.workDir}
+                            onChange={(e) =>
+                                handleChange("workDir", e.target.value)
+                            }
+                            fullWidth
+                        />
+
+                        <TextField
+                            dir="ltr"
+                            label="Password"
+                            type="password"
+                            value={form.password}
+                            onChange={(e) =>
+                                handleChange("password", e.target.value)
+                            }
+                            fullWidth
+                        />
+                    </Stack>
+
+                    {/* Advanced Toggle */}
+                    <Box mt={1}>
+                        <Button
+                            size="small"
+                            startIcon={<ExpandMoreIcon />}
+                            onClick={() => setShowAdvanced((p) => !p)}
+                        >
+                            گزینه‌های بیشتر
+                        </Button>
+                    </Box>
+
+                    {/* Advanced Fields */}
+                    <Collapse in={showAdvanced}>
+                        <Divider sx={{ my: 2 }} />
+                        <Stack spacing={2}>
+                            <TextField
+                                dir="ltr"
+                                label="Script ID"
+                                value={form.scriptId}
+                                onChange={(e) => {
+                                    setManualOverride((p) => ({
+                                        ...p,
+                                        scriptId: true,
+                                    }));
+                                    handleChange("scriptId", e.target.value);
+                                }}
+                                fullWidth
+                            />
+
+                            <TextField
+                                dir="ltr"
+                                label="SQLite File"
+                                value={form.sqliteFile}
+                                onChange={(e) => {
+                                    setManualOverride((p) => ({
+                                        ...p,
+                                        sqliteFile: true,
+                                    }));
+                                    handleChange("sqliteFile", e.target.value);
+                                }}
+                                fullWidth
+                            />
+
+                            <TextField
+                                dir="ltr"
+                                label="Args"
+                                value={form.args}
+                                onChange={(e) =>
+                                    handleChange("args", e.target.value)
+                                }
+                                helperText="مثال: --sniff --debug"
+                                fullWidth
+                            />
+                        </Stack>
+                    </Collapse>
+
+                    {/* Submit */}
+                    <Button
+                        fullWidth
+                        variant="contained"
+                        startIcon={<PlayCircleIcon />}
+                        sx={{ mt: 3 }}
+                        onClick={handleSubmit}
+                    >
+                        اجرای اسکریپت
                     </Button>
-                </DialogActions>
-            </Dialog>
+                </CardContent>
+            </Card>
         </Box>
     );
 }

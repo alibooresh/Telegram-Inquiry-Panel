@@ -41,7 +41,28 @@ function CustomDataGrid<T extends { id: string | number }>({
     const [page, setPage] = useState(0);
     const [pageSizeState, setPageSizeState] = useState(pageSize);
     const [rowCount, setRowCount] = useState(0);
+    const [columnVisibilityModel, setColumnVisibilityModel] = useState<{ [key: string]: boolean }>({});
 
+    // Load hidden columns from localStorage on mount
+    useEffect(() => {
+        const stored = localStorage.getItem("hiddenColumns");
+        if (stored) {
+            const hidden: string[] = JSON.parse(stored);
+            const model: { [key: string]: boolean } = {};
+            columns.forEach(col => {
+                model[col.field] = !hidden.includes(col.field);
+            });
+            setColumnVisibilityModel(model);
+        } else {
+            const model: { [key: string]: boolean } = {};
+            columns.forEach(col => {
+                model[col.field] = true;
+            });
+            setColumnVisibilityModel(model);
+        }
+    }, [columns]);
+
+    // Fetch data
     useEffect(() => {
         let interval: NodeJS.Timer;
 
@@ -74,7 +95,7 @@ function CustomDataGrid<T extends { id: string | number }>({
         fetchData();
 
         if (requestConfig) {
-            interval = setInterval(fetchData, (5000 * 2));
+            interval = setInterval(fetchData, 10000);
         }
 
         return () => {
@@ -82,9 +103,14 @@ function CustomDataGrid<T extends { id: string | number }>({
         };
     }, [page, rows, requestConfig, pageSizeState]);
 
+    // Handle column visibility changes
+    const handleColumnVisibilityChange = (model: { [key: string]: boolean }) => {
+        setColumnVisibilityModel(model);
+        const hidden = Object.keys(model).filter(key => !model[key]);
+        localStorage.setItem("hiddenColumns", JSON.stringify(hidden));
+    };
 
-    // وسط‌چین کردن تمام ستون‌ها و اضافه کردن ستون عملیات
-    const finalColumns: GridColDef[] = columns.map(col => ({
+    let finalColumns: GridColDef[] = columns.map(col => ({
         ...col,
         headerAlign: "center",
         align: "center",
@@ -140,6 +166,8 @@ function CustomDataGrid<T extends { id: string | number }>({
                 <DataGrid
                     rows={data}
                     columns={finalColumns}
+                    columnVisibilityModel={columnVisibilityModel} // کنترل‌شده
+                    onColumnVisibilityModelChange={handleColumnVisibilityChange} // ذخیره در localStorage
                     pagination
                     getRowId={(row) => row.imsi}
                     paginationMode={requestConfig ? "server" : "client"}

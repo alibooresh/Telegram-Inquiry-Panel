@@ -15,7 +15,6 @@ import {
 import MenuIcon from "@mui/icons-material/Menu";
 import { Home, ListAlt, PersonPin, DarkMode, LightMode } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
-import { useError } from "../base/context/ErrorContext";
 import { setupAxiosInterceptors } from "../base/axios/axios.config";
 import { useTheme } from "@mui/material/styles";
 import { useThemeMode } from "../app/theme/ThemeContext";
@@ -24,7 +23,6 @@ const drawerWidth = 210;
 
 const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const navigate = useNavigate();
-    const { showError } = useError();
     const theme = useTheme();
     const { mode, toggleMode } = useThemeMode();
 
@@ -33,8 +31,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [drawerOpen, setDrawerOpen] = useState(false);
 
     useEffect(() => {
-        setupAxiosInterceptors(showError);
-    }, [showError]);
+    }, []);
 
     const menuItems = [
         { text: "داشبورد", icon: <Home />, path: "/" },

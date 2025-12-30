@@ -84,7 +84,9 @@ function CustomDataGrid<T extends { id: string | number }>({
                         }));
                         setData(rowsWithId);
                         setRowCount(res.data.total);
-                    })
+                    }).catch(reason => {
+                    console.log(reason  )
+                })
                     .finally(() => setLoading(false));
             } else if (rows) {
                 setRowCount(rows.length);

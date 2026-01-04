@@ -160,6 +160,7 @@ export default function TestPage() {
                     key={gridKey}
                     requestConfig={requestConfig}
                     columns={terminalColumns}
+                    blockField="isBlocked"
                     pageSize={10}
                     enableActions
                 />

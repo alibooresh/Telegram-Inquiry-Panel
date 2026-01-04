@@ -12,6 +12,8 @@ import NewInquiryDetailForm from "./app/inquirydetail/form/NewInquiryDetailForm"
 import SherlockForm from "./app/sherlock/form/SherlockForm";
 import TestPage from "./app/example/TestPage";
 import ImsiScriptsPage from "./app/script/form/ImsiScriptsPage";
+import WelcomePage from "./app/welcomepage/form/WelcomePage";
+import BlacklistIMSIPage from "./app/blacklist/form/BlackListIMSIPage";
 
 
 function App() {
@@ -19,7 +21,9 @@ function App() {
         <MainLayout>
             <Suspense>
                 <Routes>
-                    <Route path="/" element={<Dashboard/>}/>
+                    <Route path="/" element={<WelcomePage/>}/>
+                    <Route path="/black-list" element={<BlacklistIMSIPage/>}/>
+                    <Route path="/dashboard" element={<Dashboard/>}/>
                     <Route path="/profile" element={<ProfileForm/>}/>
                     <Route path="/login" element={<LoginForm/>}/>
                     <Route path="/inquiry" element={<InquiryForm/>}/>

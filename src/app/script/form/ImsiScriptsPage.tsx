@@ -24,6 +24,7 @@ import TerminalIcon from "@mui/icons-material/Terminal";
 import api from "../../../base/axios/axios.config";
 import { useNavigate } from "react-router-dom";
 import { Snackbar, Alert } from "@mui/material";
+import DashboardIcon from "@mui/icons-material/Dashboard";
 
 
 interface Script {
@@ -360,6 +361,34 @@ export default function ScriptControlPanel() {
                             }}
                         >
                             نمایش دیتا
+                        </Button>
+                        {/* DASHBOARD */}
+                        <Button
+                            fullWidth
+                            size="large"
+                            variant="contained"
+                            color="primary"
+                            disabled={selectedScript === ""}
+                            startIcon={<DashboardIcon />}
+                            onClick={() =>
+                                navigate(`/dashboard?scriptId=${selectedScript}`)
+                            }
+                            sx={{
+                                py: 1.5,
+                                borderRadius: 3,
+                                fontWeight: 700,
+                                letterSpacing: 0.3,
+                                transition: "all 0.3s ease",
+
+                                "&:hover": {
+                                    transform: "translateY(-3px)",
+                                    boxShadow: "0 0 24px rgba(52, 73, 94, 0.9)",
+                                },
+
+                                "& .MuiButton-startIcon": { ml: 0.5 },
+                            }}
+                        >
+                            ورود به داشبورد
                         </Button>
                     </Stack>
 

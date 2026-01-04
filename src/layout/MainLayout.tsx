@@ -19,6 +19,9 @@ import { setupAxiosInterceptors } from "../base/axios/axios.config";
 import { useTheme } from "@mui/material/styles";
 import { useThemeMode } from "../app/theme/ThemeContext";
 import TerminalIcon from '@mui/icons-material/Terminal';
+import BarChartIcon from "@mui/icons-material/BarChart";
+import StorageIcon from "@mui/icons-material/Storage";
+import BlockIcon from "@mui/icons-material/Block";
 const drawerWidth = 210;
 
 const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -34,10 +37,11 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     }, []);
 
     const menuItems = [
-        { text: "داشبورد", icon: <Home />, path: "/" },
-        { text: "اسکریپت", icon: <TerminalIcon />, path: "/script" },
-        { text: "استعلام Sherlock", icon: <PersonPin />, path: "/sherlock" },
-        { text: "IMSI", icon: <Home />, path: "/demo" },
+        { text: "داشبورد", icon: <BarChartIcon color="warning"/>, path: "/dashboard" },
+        { text: "اسکریپت", icon: <TerminalIcon color="success" />, path: "/script" },
+        // { text: "استعلام Sherlock", icon: <PersonPin />, path: "/sherlock" },
+        { text: "IMSI", icon: <StorageIcon color="info" />, path: "/demo" },
+        { text: "IMSI لیست سیاه", icon: <BlockIcon color={"error"} />, path: "/black-list" },
     ];
 
     const drawerContent = (

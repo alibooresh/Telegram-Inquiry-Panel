@@ -1,123 +1,116 @@
-import React, { useEffect, useState } from "react";
 import {
-    Card,
-    CardContent,
-    Typography,
-    CircularProgress,
     Box,
-    useTheme
+    Paper,
+    Typography,
+    CircularProgress
 } from "@mui/material";
-import {
-    BarChart,
-    Bar,
-    XAxis,
-    YAxis,
-    Tooltip,
-    Legend,
-    ResponsiveContainer
-} from "recharts";
-import api from "../../../base/axios/axios.config";
+import { useSearchParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import OperatorsChart from "../charts/OperatorsChart";
+import CellIdChart from "../charts/CellIdChart";
+import TimelineChart from "../charts/TimelineChart";
+import Grid from "@mui/material/GridLegacy";
 
-interface InquiryStats {
-    total: number;
-    saved: number;
-    started: number;
-    finished: number;
-    failed: number;
-}
+const api = axios.create({
+    baseURL: "http://127.0.0.1:5000",
+});
 
-const Dashboard: React.FC = () => {
-    const theme = useTheme();
+export const CHART_COLORS = [
+    "#42a5f5", // blue
+    "#66bb6a", // green
+    "#ffa726", // orange
+    "#ab47bc", // purple
+    "#ef5350", // red
+];
 
-    const isDark = theme.palette.mode === "dark";
+export default function DashboardPage() {
+    const [searchParams] = useSearchParams();
+    const scriptId = searchParams.get("scriptId");
+    const numericScriptId = scriptId ? Number(scriptId) : null;
 
-    const [stats, setStats] = useState<InquiryStats | null>({
-        total: 1025,
-        saved: 652,
-        started: 568,
-        finished: 125,
-        failed: 80
-    });
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [operators, setOperators] = useState([]);
+    const [timeline, setTimeline] = useState([]);
+    const [cellIds, setCellIds] = useState([]);
 
-    const chartData = stats
-        ? [
-            { name: "کل استعلام‌ها", value: stats.total },
-            { name: "ذخیره شده", value: stats.saved },
-            { name: "درحال استعلام", value: stats.started },
-            { name: "انجام شده", value: stats.finished },
-            { name: "ناموفق", value: stats.failed }
-        ]
-        : [];
+    useEffect(() => {
+        if (!numericScriptId) return;
+
+        setLoading(true);
+
+        Promise.all([
+            api.get("/dashboard/operators", {
+                params: { scriptId: numericScriptId },
+            }),
+            api.get("/dashboard/timeline", {
+                params: { scriptId: numericScriptId },
+            }),
+            api.get("/dashboard/top-cells", {
+                params: { scriptId: numericScriptId },
+            }),
+        ])
+            .then(([opRes, timeRes, cellRes]) => {
+                setOperators(opRes.data);
+                setTimeline(timeRes.data);
+                setCellIds(cellRes.data);
+            })
+            .finally(() => setLoading(false));
+    }, [numericScriptId]);
+
+    if (!numericScriptId) {
+        return (
+            <Box
+                height="60vh"
+                display="flex"
+                alignItems="center"
+                justifyContent="center"
+            >
+                <Typography color="text.secondary">
+                    اسکریپتی انتخاب نشده است
+                </Typography>
+            </Box>
+        );
+    }
+
+    if (loading) {
+        return (
+            <Box
+                height="60vh"
+                display="flex"
+                alignItems="center"
+                justifyContent="center"
+            >
+                <CircularProgress />
+            </Box>
+        );
+    }
 
     return (
-        <Box sx={{ display: "flex", justifyContent: "center", mt: 3 }}>
-            <Card
-                sx={{
-                    width: "100%",
-                    maxWidth: 1000,
-                    background: isDark
-                        ? "rgba(30,30,40,0.6)"
-                        : "rgba(255,255,255,0.6)",
-                    backdropFilter: "blur(14px)",
-                    border: `1px solid ${
-                        isDark
-                            ? "rgba(255,255,255,0.1)"
-                            : "rgba(0,0,0,0.1)"
-                    }`,
-                    borderRadius: 3,
-                }}
-            >
-                <CardContent>
-                    <Typography
-                        color={"primary"}
-                        variant="h5"
-                        align="right"
-                        fontWeight="bold"
-                        gutterBottom
-                    >
-                        داشبورد استعلام‌ها
-                    </Typography>
+        <Box p={3}>
+            <Typography variant="h5" mb={3}>
+                IMSI Detection Dashboard
+            </Typography>
 
-                    {loading || !stats ? (
-                        <Box
-                            display="flex"
-                            justifyContent="center"
-                            alignItems="center"
-                            height={200}
-                        >
-                            <CircularProgress color="info" />
-                        </Box>
-                    ) : (
-                        <ResponsiveContainer width="100%" height={400}>
-                            <BarChart data={chartData}>
-                                <XAxis
-                                    dataKey="name"
-                                    stroke={isDark ? "#e0e0e0" : "#333"}
-                                />
-                                <YAxis stroke={isDark ? "#e0e0e0" : "#333"} />
-                                <Tooltip
-                                    wrapperStyle={{
-                                        backgroundColor: isDark
-                                            ? "#2c2c2c"
-                                            : "#f6f6f6",
-                                        borderRadius: 8,
-                                        padding: 5,
-                                        border: "1px solid rgba(0,0,0,0.2)"
-                                    }}
-                                />
-                                <Legend />
-                                <Bar
-                                    dataKey="value"
-                                    fill={isDark ? "#90caf9" : "#1976d2"}
-                                />
-                            </BarChart>
-                        </ResponsiveContainer>
-                    )}
-                </CardContent>
-            </Card>
+            <Grid container spacing={3}>
+                <Grid item xs={12}>
+                    <Paper sx={{ p: 2, height: 360 }}>
+                        <OperatorsChart data={operators} />
+                    </Paper>
+                </Grid>
+
+                <Grid item xs={12}>
+                    <Paper sx={{ p: 2, height: 360 }}>
+                        <CellIdChart data={cellIds} />
+                    </Paper>
+                </Grid>
+
+                <Grid item xs={12}>
+                    <Paper sx={{ p: 2, height: 420 }}>
+                        <TimelineChart data={timeline} />
+                    </Paper>
+                </Grid>
+            </Grid>
         </Box>
     );
-};
-
-export default Dashboard;
+}

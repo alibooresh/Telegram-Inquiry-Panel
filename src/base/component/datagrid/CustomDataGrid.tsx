@@ -1,7 +1,7 @@
-import { Box, CircularProgress, IconButton } from "@mui/material";
-import { DataGrid, type GridColDef, type GridRowsProp } from "@mui/x-data-grid";
-import type { AxiosRequestConfig } from "axios";
-import { type ReactNode, useEffect, useState } from "react";
+import {Box, CircularProgress, IconButton} from "@mui/material";
+import {DataGrid, type GridColDef, type GridRowsProp} from "@mui/x-data-grid";
+import type {AxiosRequestConfig} from "axios";
+import {type ReactNode, useEffect, useState} from "react";
 import api from "../../axios/axios.config";
 
 interface CustomDataGridProps<T> {
@@ -10,6 +10,7 @@ interface CustomDataGridProps<T> {
     requestConfig?: AxiosRequestConfig;
     pageSize?: number;
     enableActions?: boolean;
+    blockField?: string;
     actions?: GridAction<T>[];
 }
 
@@ -35,6 +36,7 @@ function CustomDataGrid<T extends { id: string | number }>({
                                                                pageSize = 10,
                                                                enableActions = false,
                                                                actions = [],
+                                                               blockField
                                                            }: CustomDataGridProps<T>) {
     const [data, setData] = useState<GridRowsProp>([]);
     const [loading, setLoading] = useState(false);
@@ -85,7 +87,7 @@ function CustomDataGrid<T extends { id: string | number }>({
                         setData(rowsWithId);
                         setRowCount(res.data.total);
                     }).catch(reason => {
-                    console.log(reason  )
+                    console.log(reason)
                 })
                     .finally(() => setLoading(false));
             } else if (rows) {
@@ -162,19 +164,23 @@ function CustomDataGrid<T extends { id: string | number }>({
         >
             {loading ? (
                 <Box display="flex" justifyContent="center" alignItems="center" flexGrow={1}>
-                    <CircularProgress color="info" />
+                    <CircularProgress color="info"/>
                 </Box>
             ) : (
                 <DataGrid
                     rows={data}
                     columns={finalColumns}
+                    getRowClassName={(params) => {
+                        if (!blockField) return "";
+                        return params.row?.[blockField] === true ? "blocked-row" : "";
+                    }}
                     columnVisibilityModel={columnVisibilityModel} // کنترل‌شده
                     onColumnVisibilityModelChange={handleColumnVisibilityChange} // ذخیره در localStorage
                     pagination
                     getRowId={(row) => row.imsi}
                     paginationMode={requestConfig ? "server" : "client"}
                     rowCount={rowCount}
-                    paginationModel={{ page, pageSize: pageSizeState }}
+                    paginationModel={{page, pageSize: pageSizeState}}
                     onPaginationModelChange={(model) => {
                         setPage(model.page);
                         setPageSizeState(model.pageSize);
@@ -245,7 +251,6 @@ function CustomDataGrid<T extends { id: string | number }>({
                         paginationRowsPerPage: "ردیف در هر صفحه:",
 
 
-
                         // Tree data
                         treeDataGroupingHeaderName: "گروه‌بندی",
                         treeDataExpand: "باز کردن",
@@ -278,8 +283,21 @@ function CustomDataGrid<T extends { id: string | number }>({
                             backgroundColor: "rgba(50,50,60,0.6)",
                             color: "#e3f2fd",
                         },
-                        '& .MuiDataGrid-cell:focus': { outline: 'none' },
-                        '& .MuiDataGrid-cell:focus-within': { outline: 'none' },
+                        '& .MuiDataGrid-cell:focus': {outline: 'none'},
+                        '& .MuiDataGrid-cell:focus-within': {outline: 'none'},
+                        "& .blocked-row": {
+                            backgroundColor: "rgba(231, 76, 60, 0.18)",
+                            color: "#ffb3b3",
+                            fontWeight: 500,
+                        },
+
+                        "& .blocked-row:hover": {
+                            backgroundColor: "rgba(231, 76, 60, 0.28)",
+                        },
+
+                        "& .blocked-row .MuiDataGrid-cell": {
+                            borderBottom: "1px solid rgba(231, 76, 60, 0.35)",
+                        },
                     }}
                 />
             )}
